@@ -1,7 +1,7 @@
-//Створення екрану для відображення списку слів
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Button, Alert, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const WordListScreen = ({ navigation }) => {
     const [words, setWords] = useState([]);
@@ -10,22 +10,23 @@ const WordListScreen = ({ navigation }) => {
         const loadWords = async () => {
             try {
                 const storedWords = await AsyncStorage.getItem('words');
-                if (storedWords) {
+                if (storedWords !== null) {
                     setWords(JSON.parse(storedWords));
                 }
             } catch (error) {
-                console.error(error);
+                console.error('Error loading words', error);
             }
         };
 
+        // Listener to reload words when screen is focused
         const focusListener = navigation.addListener('focus', () => {
             loadWords();
         });
 
-        return focusListener;
+        return focusListener;  // Cleanup the listener when the component is unmounted
     }, [navigation]);
 
-    const deleteWord = async (index) => {
+    const confirmDeleteWord = (index) => {
         Alert.alert(
             "Confirm Delete",
             "Are you sure you want to delete this word?",
@@ -33,30 +34,40 @@ const WordListScreen = ({ navigation }) => {
                 { text: "Cancel", style: "cancel" },
                 {
                     text: "Delete",
-                    onPress: async () => {
-                        let updatedWords = [...words];
-                        updatedWords.splice(index, 1);
-                        setWords(updatedWords);
-                        await AsyncStorage.setItem('words', JSON.stringify(updatedWords));
-                    },
+                    onPress: () => deleteWord(index),
                 },
             ],
             { cancelable: true }
         );
     };
 
+    const deleteWord = async (id) => {
+        const updatedWords = words.filter((_, index) => index !== id);
+        setWords(updatedWords);
+        await AsyncStorage.setItem('words', JSON.stringify(updatedWords));
+    };
+
+    const renderItem = ({ item, index }) => (
+        <View style={styles.itemContainer}>
+            <Text style={styles.word}>{index + 1}. {item.word} - {item.translation}</Text>
+            <View style={styles.actionIcons}>
+                <TouchableOpacity onPress={() => navigation.navigate('WordEdit', { index, item })}>
+                    <Icon name="create-outline" size={24} color="#007acc" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => confirmDeleteWord(index)}>
+                    <Icon name="trash-outline" size={24} color="#ff6347" />
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
+
     return (
         <View style={styles.container}>
             <FlatList
                 data={words}
                 keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item, index }) => (
-                    <View style={styles.wordItem}>
-                        <Text>{item.word} - {item.translation}</Text>
-                        <Button title="Edit" onPress={() => navigation.navigate('WordEdit', { index, item })} />
-                        <Button title="Delete" onPress={() => deleteWord(index)} />
-                    </View>
-                )}
+                renderItem={renderItem}
+                ListEmptyComponent={<Text style={styles.emptyMessage}>No words added yet.</Text>}
             />
         </View>
     );
@@ -66,13 +77,28 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+        backgroundColor: '#f0f4f7',
     },
-    wordItem: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
+    itemContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
+    word: {
+        fontSize: 18,
+        color: '#333',
+    },
+    actionIcons: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+    emptyMessage: {
+        textAlign: 'center',
+        fontSize: 16,
+        color: '#666',
     },
 });
 

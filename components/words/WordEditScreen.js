@@ -11,9 +11,9 @@ const WordEditScreen = ({ route, navigation }) => {
         try {
             const storedWords = await AsyncStorage.getItem('words');
             const words = storedWords ? JSON.parse(storedWords) : [];
-            words[index] = { word, translation };
+            words[index] = { word, translation };  // Update the word
             await AsyncStorage.setItem('words', JSON.stringify(words));
-            navigation.goBack();
+            navigation.goBack();  // Go back after saving
         } catch (error) {
             console.error(error);
         }

@@ -11,7 +11,7 @@ const PhraseEditScreen = ({ route, navigation }) => {
         try {
             const storedPhrases = await AsyncStorage.getItem('phrases');
             const phrases = storedPhrases ? JSON.parse(storedPhrases) : [];
-            phrases[index] = { phrase, translation };
+            phrases[index] = { phrase, translation };  // Update the phrase
             await AsyncStorage.setItem('phrases', JSON.stringify(phrases));
             navigation.goBack();
         } catch (error) {
