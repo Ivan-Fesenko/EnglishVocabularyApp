@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, Modal, Animated } from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Modal,
+    Animated,
+    StyleSheet,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PhraseGame = () => {
@@ -20,10 +27,7 @@ const PhraseGame = () => {
         try {
             const storedPhrases = await AsyncStorage.getItem('phrases');
             let phraseList = storedPhrases ? JSON.parse(storedPhrases) : [];
-
-            // Перемішуємо список фраз
             phraseList = phraseList.sort(() => Math.random() - 0.5);
-
             setPhrases(phraseList);
             if (phraseList.length > 0) {
                 generateChoices(phraseList[0], phraseList);
@@ -35,7 +39,9 @@ const PhraseGame = () => {
 
     const generateChoices = (currentPhrase, allPhrases) => {
         const correctChoice = currentPhrase.translation;
-        const otherPhrases = allPhrases.filter((phrase) => phrase.translation !== correctChoice);
+        const otherPhrases = allPhrases.filter(
+            (phrase) => phrase.translation !== correctChoice
+        );
 
         let choicesArray = [correctChoice];
         while (choicesArray.length < 3 && otherPhrases.length > 0) {
@@ -46,7 +52,7 @@ const PhraseGame = () => {
             }
         }
 
-        choicesArray.sort(() => Math.random() - 0.5); // Перемішуємо варіанти
+        choicesArray.sort(() => Math.random() - 0.5);
         setChoices(choicesArray);
     };
 
@@ -65,7 +71,7 @@ const PhraseGame = () => {
             setCurrentPhraseIndex(nextIndex);
             generateChoices(phrases[nextIndex], phrases);
         } else {
-            showModal(); // Показуємо результати
+            showModal();
         }
     };
 
@@ -75,7 +81,7 @@ const PhraseGame = () => {
     };
 
     const quitGame = () => {
-        showModal(); // Показуємо результати при виході
+        showModal();
     };
 
     const resetGame = () => {
@@ -99,7 +105,7 @@ const PhraseGame = () => {
     if (phrases.length === 0) {
         return (
             <View style={styles.container}>
-                <Text>No phrases available. Add phrases to play the game.</Text>
+                <Text style={styles.noDataText}>No phrases available. Add phrases to play the game.</Text>
             </View>
         );
     }
@@ -108,25 +114,33 @@ const PhraseGame = () => {
         <View style={styles.container}>
             <Text style={styles.title}>Phrase: {phrases[currentPhraseIndex]?.phrase}</Text>
             {choices.map((choice, index) => (
-                <TouchableOpacity key={index} style={styles.choiceButton} onPress={() => handleChoice(choice)}>
+                <TouchableOpacity
+                    key={index}
+                    style={styles.choiceButton}
+                    onPress={() => handleChoice(choice)}
+                >
                     <Text style={styles.choiceText}>{choice}</Text>
                 </TouchableOpacity>
             ))}
             <View style={styles.buttonContainer}>
-                <Button title="Skip" onPress={skipPhrase} />
-                <Button title="Quit Game" onPress={quitGame} />
+                <TouchableOpacity style={styles.skipButton} onPress={skipPhrase}>
+                    <Text style={styles.buttonText}>Skip</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.quitButton} onPress={quitGame}>
+                    <Text style={styles.buttonText}>Quit Game</Text>
+                </TouchableOpacity>
             </View>
 
             {/* Модальне вікно з результатами */}
             <Modal visible={modalVisible} animationType="fade" transparent={true}>
                 <View style={styles.modalContainer}>
                     <Animated.View style={[styles.modalContent, { opacity: fadeAnim }]}>
-                        <Text style={styles.modalTitle}>Результати гри</Text>
-                        <Text style={styles.resultText}>Правильні відповіді: {score}</Text>
-                        <Text style={styles.resultText}>Неправильні відповіді: {incorrect}</Text>
-                        <Text style={styles.resultText}>Пропущено: {skipped}</Text>
+                        <Text style={styles.modalTitle}>Game Results</Text>
+                        <Text style={styles.resultText}>Correct Answers: {score}</Text>
+                        <Text style={styles.resultText}>Incorrect Answers: {incorrect}</Text>
+                        <Text style={styles.resultText}>Skipped: {skipped}</Text>
                         <TouchableOpacity style={styles.closeButton} onPress={resetGame}>
-                            <Text style={styles.closeButtonText}>Закрити</Text>
+                            <Text style={styles.closeButtonText}>Close</Text>
                         </TouchableOpacity>
                     </Animated.View>
                 </View>
@@ -141,9 +155,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
+        backgroundColor: '#f0f4f7',
     },
     title: {
         fontSize: 24,
+        fontWeight: 'bold',
+        color: '#007acc',
         marginBottom: 20,
     },
     choiceButton: {
@@ -153,6 +170,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: '80%',
         alignItems: 'center',
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
     },
     choiceText: {
         color: '#fff',
@@ -160,9 +182,26 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         width: '80%',
         marginTop: 20,
+    },
+    skipButton: {
+        backgroundColor: '#ffa500',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 10,
+    },
+    quitButton: {
+        backgroundColor: '#ff6347',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 10,
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     modalContainer: {
         flex: 1,
@@ -204,7 +243,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    noDataText: {
+        fontSize: 18,
+        color: '#ff6347',
+        textAlign: 'center',
+    },
 });
 
 export default PhraseGame;
-
