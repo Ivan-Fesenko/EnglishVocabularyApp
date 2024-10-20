@@ -5,7 +5,6 @@ import {
     Modal,
     TouchableOpacity,
     StyleSheet,
-    Pressable,
     Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -18,12 +17,15 @@ const HomeScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             {/* Info Icon */}
-            <Pressable
+            <TouchableOpacity
                 style={styles.infoIcon}
                 onPress={() => setModalVisible(true)}
             >
-                <Icon name="information-circle-outline" size={30} color="#007acc" />
-            </Pressable>
+                <Image
+                    source={require('../assets/info.png')} // Replace with your custom icon
+                    style={styles.infoIconImage}
+                />
+            </TouchableOpacity>
 
             {/* Main Content */}
             <View style={styles.mainContent}>
@@ -54,7 +56,7 @@ const HomeScreen = ({ navigation }) => {
 
             {/* Info Modal */}
             <Modal
-                animationType="fade"
+                animationType="slide"
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => setModalVisible(false)}
@@ -63,12 +65,12 @@ const HomeScreen = ({ navigation }) => {
                     <View style={styles.modalContent}>
                         <InfoScreen />
                         {/* Close Icon */}
-                        <Pressable
+                        <TouchableOpacity
                             style={styles.closeIcon}
                             onPress={() => setModalVisible(false)}
                         >
                             <Icon name="close-circle" size={30} color="#007acc" />
-                        </Pressable>
+                        </TouchableOpacity>
                     </View>
                 </BlurView>
             </Modal>
@@ -86,6 +88,10 @@ const styles = StyleSheet.create({
         top: 50,
         right: 20,
         zIndex: 10,
+    },
+    infoIconImage: {
+        width: 30,
+        height: 30,
     },
     mainContent: {
         flex: 1,
@@ -154,6 +160,10 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         position: 'relative',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
     },
     closeIcon: {
         position: 'absolute',

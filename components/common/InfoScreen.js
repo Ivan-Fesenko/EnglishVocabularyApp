@@ -1,60 +1,72 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 const InfoScreen = () => {
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>About the Vocabulary App</Text>
+        <ScrollView contentContainerStyle={styles.container}>
+            <Text style={styles.title}>Про Додаток "Vocabulary App"</Text>
             <Text style={styles.paragraph}>
-                This app is designed to help you learn and memorize English words and phrases. It allows you to add new words or phrases, repeat them, and track your progress.
+                Цей додаток створений для того, щоб допомогти вам вивчати та запам’ятовувати
+                англійські слова і фрази. Він дозволяє додавати нові слова та фрази, повторювати їх
+                і відстежувати ваш прогрес.
             </Text>
             <Text style={styles.paragraph}>
-                Features include:
+                Основні можливості додатку:
             </Text>
-            <Text style={styles.listItem}>1. Adding new words and phrases.</Text>
-            <Text style={styles.listItem}>2. Choosing between word or phrase repetition modes.</Text>
-            <Text style={styles.listItem}>3. Testing your knowledge on added material.</Text>
-            <Text style={styles.listItem}>4. Tracking your progress to stay motivated.</Text>
+            <View style={styles.list}>
+                <Text style={styles.listItem}>1. Додавання нових слів та фраз.</Text>
+                <Text style={styles.listItem}>2. Практика через режими повторення.</Text>
+                <Text style={styles.listItem}>3. Перевірка ваших знань.</Text>
+                <Text style={styles.listItem}>4. Відстеження прогресу для мотивації.</Text>
+            </View>
             <Text style={styles.paragraph}>
-                It's a great tool for those who want to improve their language skills in an interactive and efficient way.
+                Додаток ідеально підходить для тих, хто хоче покращити свої мовні навички
+                інтерактивно та ефективно.
             </Text>
-            <Text style={styles.footer}>Version 1.0.0</Text>
-        </View>
+            <Text style={styles.footer}>Версія 1.0.0</Text>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         padding: 20,
-        backgroundColor: '#f0f4f7',
+        backgroundColor: '#fff',
+        alignItems: 'flex-start',
     },
     title: {
-        fontSize: 28,
+        fontSize: 26,
         fontWeight: 'bold',
         color: '#007acc',
         marginBottom: 20,
+        textAlign: 'left',
+        alignSelf: 'stretch',
     },
     paragraph: {
         fontSize: 16,
         color: '#333',
         marginBottom: 10,
         lineHeight: 22,
-        textAlign: 'center', // Центруємо текст для естетичного вигляду
+        textAlign: 'left',
+    },
+    list: {
+        marginLeft: 10,
     },
     listItem: {
         fontSize: 16,
         color: '#333',
         marginBottom: 5,
         lineHeight: 22,
-        textAlign: 'left', // Список вирівнюється вліво
+        textAlign: 'left',
     },
     footer: {
         fontSize: 14,
         color: '#666',
         marginTop: 20,
-        textAlign: 'center',
+        textAlign: 'left',
     },
 });
 
 export default InfoScreen;
+
