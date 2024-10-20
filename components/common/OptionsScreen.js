@@ -1,52 +1,55 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // Підключаємо іконки
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const OptionsScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            {/* Блок для ігор вгорі */}
+            {/* Заголовок */}
+            <Text style={styles.title}>Choose Your Activity</Text>
+
+            {/* Секція для практики слів і фраз */}
             <View style={styles.gameSection}>
                 <TouchableOpacity
-                    style={styles.gameButton}
+                    style={[styles.button, styles.practiceButton]}
                     onPress={() => navigation.navigate('WordGame')}
                 >
-                    <Icon name="game-controller-outline" size={24} color="#fff" />
+                    <Icon name="game-controller-outline" size={24} color="#fff" style={styles.icon} />
                     <Text style={styles.buttonText}>Practice Words</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={styles.gameButton}
+                    style={[styles.button, styles.practiceButton]}
                     onPress={() => navigation.navigate('PhraseGame')}
                 >
-                    <Icon name="chatbubble-ellipses-outline" size={24} color="#fff" />
+                    <Icon name="chatbubble-outline" size={24} color="#fff" style={styles.icon} />
                     <Text style={styles.buttonText}>Practice Phrases</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* Блок для читання та додавання слів і фраз знизу */}
+            {/* Секція для читання та додавання */}
             <View style={styles.readAddSection}>
                 <TouchableOpacity
-                    style={styles.readButton}
+                    style={[styles.button, styles.readButton]}
                     onPress={() => navigation.navigate('WordList')}
                 >
-                    <Icon name="book-outline" size={24} color="#007acc" />
+                    <Icon name="book-outline" size={24} color="#007acc" style={styles.icon} />
                     <Text style={styles.readButtonText}>Read Words</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={styles.readButton}
+                    style={[styles.button, styles.readButton]}
                     onPress={() => navigation.navigate('PhraseList')}
                 >
-                    <Icon name="book-outline" size={24} color="#007acc" />
+                    <Icon name="book-outline" size={24} color="#007acc" style={styles.icon} />
                     <Text style={styles.readButtonText}>Read Phrases</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={styles.addButton}
+                    style={[styles.button, styles.addButton]}
                     onPress={() => navigation.navigate('AddWordsAndPhrases')}
                 >
-                    <Icon name="add-circle-outline" size={24} color="#fff" />
+                    <Icon name="add-circle-outline" size={24} color="#fff" style={styles.icon} />
                     <Text style={styles.buttonText}>Add Words and Phrases</Text>
                 </TouchableOpacity>
             </View>
@@ -57,52 +60,51 @@ const OptionsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'space-between',
         backgroundColor: '#f0f4f7',
         paddingHorizontal: 20,
-        paddingVertical: 30,
+        paddingVertical: 40,
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#007acc',
+        textAlign: 'center',
+        marginBottom: 20,
     },
     gameSection: {
-        flexDirection: 'column',
         alignItems: 'center',
+        marginBottom: 30,
     },
     readAddSection: {
         alignItems: 'center',
+        marginTop: 20,
     },
-    gameButton: {
+    button: {
         flexDirection: 'row',
-        backgroundColor: '#007acc',
-        paddingVertical: 15,
-        paddingHorizontal: 40,
-        borderRadius: 10,
-        marginVertical: 10,
-        width: '80%',
-        justifyContent: 'center',
         alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 15,
+        paddingHorizontal: 25,
+        borderRadius: 15,
+        marginVertical: 10,
+        width: '85%',
+        elevation: 5, // Додаємо тінь для кращого вигляду
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+    },
+    practiceButton: {
+        backgroundColor: '#007acc',
     },
     readButton: {
-        flexDirection: 'row',
         backgroundColor: '#fff',
-        paddingVertical: 12,
-        paddingHorizontal: 30,
-        borderRadius: 8,
+        borderWidth: 2,
         borderColor: '#007acc',
-        borderWidth: 1,
-        marginVertical: 10,
-        width: '80%',
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     addButton: {
-        flexDirection: 'row',
-        backgroundColor: '#007acc',
-        paddingVertical: 15,
-        paddingHorizontal: 40,
-        borderRadius: 10,
-        marginVertical: 10,
-        width: '80%',
-        justifyContent: 'center',
-        alignItems: 'center',
+        backgroundColor: '#ff6347',
     },
     buttonText: {
         color: '#fff',
@@ -115,6 +117,9 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginLeft: 10,
+    },
+    icon: {
+        marginRight: 10,
     },
 });
 

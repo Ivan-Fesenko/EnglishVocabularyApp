@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet, Pressable, ScrollView } from 'react-native'; // Імпортуємо всі компоненти
+import {
+    View,
+    Text,
+    Modal,
+    TouchableOpacity,
+    StyleSheet,
+    Pressable,
+    Image,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { BlurView } from 'expo-blur';
-import InfoScreen from './common/InfoScreen'; // Імпорт вашого InfoScreen компонента
+import InfoScreen from './common/InfoScreen';
 
 const HomeScreen = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     return (
         <View style={styles.container}>
-            {/* Іконка інформації */}
+            {/* Info Icon */}
             <Pressable
                 style={styles.infoIcon}
                 onPress={() => setModalVisible(true)}
@@ -17,15 +25,25 @@ const HomeScreen = ({ navigation }) => {
                 <Icon name="information-circle-outline" size={30} color="#007acc" />
             </Pressable>
 
-            {/* Основний контент */}
+            {/* Main Content */}
             <View style={styles.mainContent}>
-                <Text style={styles.title}>Welcome to the Vocabulary App</Text>
-                <Text style={styles.subtitle}>Learn and repeat words in English</Text>
+                {/* Circular Logo Container */}
+                <View style={styles.logoContainer}>
+                    <Image
+                        source={require('../assets/1.png')}
+                        style={styles.logo}
+                        resizeMode="contain"
+                    />
+                </View>
+
+                <Text style={styles.title}>Boost Your Vocabulary</Text>
+                <Text style={styles.subtitle}>Learn English effortlessly!</Text>
+
                 <TouchableOpacity
                     style={styles.startButton}
                     onPress={() => navigation.navigate('Options')}
                 >
-                    <Text style={styles.startButtonText}>Start</Text>
+                    <Text style={styles.startButtonText}>Get Started</Text>
                 </TouchableOpacity>
             </View>
 
@@ -34,7 +52,7 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.footerText}>Master English with ease!</Text>
             </View>
 
-            {/* Модальне вікно з інформацією */}
+            {/* Info Modal */}
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -43,12 +61,12 @@ const HomeScreen = ({ navigation }) => {
             >
                 <BlurView intensity={80} style={styles.blurContainer}>
                     <View style={styles.modalContent}>
-                        {/* Додаємо прокрутку для InfoScreen */}
-                        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                            <InfoScreen />
-                        </ScrollView>
-                        {/* Кнопка закриття у верхньому правому кутку */}
-                        <Pressable style={styles.closeIcon} onPress={() => setModalVisible(false)}>
+                        <InfoScreen />
+                        {/* Close Icon */}
+                        <Pressable
+                            style={styles.closeIcon}
+                            onPress={() => setModalVisible(false)}
+                        >
                             <Icon name="close-circle" size={30} color="#007acc" />
                         </Pressable>
                     </View>
@@ -74,16 +92,34 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    logoContainer: {
+        width: 150,
+        height: 150,
+        borderRadius: 75,
+        backgroundColor: '#e0e0e0',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        elevation: 5,
+    },
+    logo: {
+        width: 100,
+        height: 100,
+    },
     title: {
-        fontSize: 32,
+        fontSize: 28,
         fontWeight: 'bold',
         color: '#007acc',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     subtitle: {
         fontSize: 18,
         color: '#666',
-        marginBottom: 40,
+        marginBottom: 30,
     },
     startButton: {
         backgroundColor: '#007acc',
@@ -105,30 +141,19 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
     },
-    // Стилі для модального вікна
     blurContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',  // Легке затемнення фону
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
     },
     modalContent: {
         width: '85%',
-        height: '70%',  // Більше місця для контенту
+        height: '70%',
         backgroundColor: '#fff',
         borderRadius: 20,
         padding: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
-        elevation: 5,
         position: 'relative',
-    },
-    scrollViewContent: {
-        flexGrow: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
     },
     closeIcon: {
         position: 'absolute',
