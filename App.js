@@ -13,6 +13,9 @@ import PhraseEditScreen from './components/phrases/PhraseEditScreen';
 import AddWordsAndPhrasesScreen from './components/common/AddWordsAndPhrasesScreen';
 import WordGame from './components/games/WordGame';
 import PhraseGame from './components/games/PhraseGame';
+import WordMistakesGame from './components/mistakes/WordMistakesGame';
+import PhraseMistakesGame from './components/mistakes/PhraseMistakesGame';
+import MistakeScreen from './components/mistakes/MistakeScreen';
 
 const Stack = createStackNavigator();
 
@@ -92,6 +95,21 @@ export default function App() {
           name="PhraseGame"
           component={PhraseGame}
           options={{ title: 'Phrase Game' }}
+        />
+        <Stack.Screen
+          name="Mistakes"
+          component={MistakeScreen}
+          options={{ title: 'Work on Mistakes' }}
+        />
+        <Stack.Screen
+          name="WordMistakesGame"
+          component={WordMistakesGame}
+          options={{ title: 'Work on Mistakes (Words)' }}
+        />
+        <Stack.Screen
+          name="PhraseMistakesGame"
+          component={PhraseMistakesGame}
+          options={{ title: 'Work on Mistakes (Phrases)' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

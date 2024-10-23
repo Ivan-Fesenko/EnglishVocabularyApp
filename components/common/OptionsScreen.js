@@ -5,10 +5,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const OptionsScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            {/* Заголовок */}
             <Text style={styles.title}>Choose Your Activity</Text>
 
-            {/* Секція для практики слів і фраз */}
             <View style={styles.gameSection}>
                 <TouchableOpacity
                     style={[styles.button, styles.practiceButton]}
@@ -27,7 +25,16 @@ const OptionsScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
 
-            {/* Секція для читання та додавання */}
+            <View style={styles.mistakeSection}>
+                <TouchableOpacity
+                    style={[styles.button, styles.errorButton]}
+                    onPress={() => navigation.navigate('Mistakes')}
+                >
+                    <Icon name="warning-outline" size={24} color="#fff" style={styles.icon} />
+                    <Text style={styles.buttonText}>Work on Mistakes</Text>
+                </TouchableOpacity>
+            </View>
+
             <View style={styles.readAddSection}>
                 <TouchableOpacity
                     style={[styles.button, styles.readButton]}
@@ -74,7 +81,11 @@ const styles = StyleSheet.create({
     },
     gameSection: {
         alignItems: 'center',
-        marginBottom: 30,
+        marginBottom: 20,
+    },
+    mistakeSection: {
+        alignItems: 'center',
+        marginVertical: 20,
     },
     readAddSection: {
         alignItems: 'center',
@@ -89,7 +100,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginVertical: 10,
         width: '85%',
-        elevation: 5, // Додаємо тінь для кращого вигляду
+        elevation: 5,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
@@ -98,13 +109,16 @@ const styles = StyleSheet.create({
     practiceButton: {
         backgroundColor: '#007acc',
     },
+    errorButton: {
+        backgroundColor: '#ff6347',
+    },
     readButton: {
         backgroundColor: '#fff',
         borderWidth: 2,
         borderColor: '#007acc',
     },
     addButton: {
-        backgroundColor: '#ff6347',
+        backgroundColor: '#28a745',
     },
     buttonText: {
         color: '#fff',
@@ -124,3 +138,4 @@ const styles = StyleSheet.create({
 });
 
 export default OptionsScreen;
+

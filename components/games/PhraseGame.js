@@ -56,13 +56,28 @@ const PhraseGame = () => {
         setChoices(choicesArray);
     };
 
-    const handleChoice = (choice) => {
-        if (choice === phrases[currentPhraseIndex].translation) {
+    const handleChoice = async (choice) => {
+        const currentPhrase = phrases[currentPhraseIndex];
+        if (choice === currentPhrase.translation) {
             setScore(score + 1);
         } else {
             setIncorrect(incorrect + 1);
+            await saveMistake(currentPhrase);
         }
         nextPhrase();
+    };
+
+    const saveMistake = async (phrase) => {
+        try {
+            const storedMistakes = await AsyncStorage.getItem('phraseMistakes');
+            let mistakesList = storedMistakes ? JSON.parse(storedMistakes) : [];
+            if (!mistakesList.some((item) => item.phrase === phrase.phrase)) {
+                mistakesList.push(phrase);
+                await AsyncStorage.setItem('phraseMistakes', JSON.stringify(mistakesList));
+            }
+        } catch (error) {
+            console.error('Error saving mistake', error);
+        }
     };
 
     const nextPhrase = () => {
@@ -75,8 +90,9 @@ const PhraseGame = () => {
         }
     };
 
-    const skipPhrase = () => {
+    const skipPhrase = async () => {
         setSkipped(skipped + 1);
+        await saveMistake(phrases[currentPhraseIndex]);
         nextPhrase();
     };
 
@@ -105,14 +121,18 @@ const PhraseGame = () => {
     if (phrases.length === 0) {
         return (
             <View style={styles.container}>
-                <Text style={styles.noDataText}>No phrases available. Add phrases to play the game.</Text>
+                <Text style={styles.noDataText}>
+                    No phrases available. Add phrases to play the game.
+                </Text>
             </View>
         );
     }
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Phrase: {phrases[currentPhraseIndex]?.phrase}</Text>
+            <Text style={styles.title}>
+                Phrase: {phrases[currentPhraseIndex]?.phrase}
+            </Text>
             {choices.map((choice, index) => (
                 <TouchableOpacity
                     key={index}
@@ -127,11 +147,10 @@ const PhraseGame = () => {
                     <Text style={styles.buttonText}>Skip</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.quitButton} onPress={quitGame}>
-                    <Text style={styles.buttonText}>Quit Game</Text>
+                    <Text style={styles.buttonText}>Quit</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* Модальне вікно з результатами */}
             <Modal visible={modalVisible} animationType="fade" transparent={true}>
                 <View style={styles.modalContainer}>
                     <Animated.View style={[styles.modalContent, { opacity: fadeAnim }]}>
@@ -170,11 +189,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: '80%',
         alignItems: 'center',
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
     },
     choiceText: {
         color: '#fff',
@@ -215,11 +229,6 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         width: '80%',
         alignItems: 'center',
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
     },
     modalTitle: {
         fontSize: 28,

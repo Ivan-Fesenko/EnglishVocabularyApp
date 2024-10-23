@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    Modal,
-    Animated,
-    StyleSheet,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Modal, Animated, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const WordGame = () => {
@@ -26,9 +19,8 @@ const WordGame = () => {
     const loadWords = async () => {
         try {
             const storedWords = await AsyncStorage.getItem('words');
-            let wordList = storedWords ? JSON.parse(storedWords) : [];
-            wordList = wordList.sort(() => Math.random() - 0.5);
-            setWords(wordList);
+            const wordList = storedWords ? JSON.parse(storedWords) : [];
+            setWords(wordList.sort(() => Math.random() - 0.5));
             if (wordList.length > 0) {
                 generateChoices(wordList[0], wordList);
             }
@@ -39,9 +31,7 @@ const WordGame = () => {
 
     const generateChoices = (currentWord, allWords) => {
         const correctChoice = currentWord.translation;
-        const otherWords = allWords.filter(
-            (word) => word.translation !== correctChoice
-        );
+        const otherWords = allWords.filter(word => word.translation !== correctChoice);
 
         let choicesArray = [correctChoice];
         while (choicesArray.length < 3 && otherWords.length > 0) {
@@ -56,12 +46,44 @@ const WordGame = () => {
         setChoices(choicesArray);
     };
 
-    const handleChoice = (choice) => {
-        if (choice === words[currentWordIndex].translation) {
+    const saveToMistakeWords = async (word) => {
+        try {
+            const storedMistakeWords = await AsyncStorage.getItem('mistakeWords');
+            const mistakeWords = storedMistakeWords ? JSON.parse(storedMistakeWords) : [];
+
+            const isWordInMistakes = mistakeWords.some(
+                mistake => mistake.word === word.word && mistake.translation === word.translation
+            );
+
+            if (!isWordInMistakes) {
+                const updatedMistakeWords = [...mistakeWords, word];
+                await AsyncStorage.setItem('mistakeWords', JSON.stringify(updatedMistakeWords));
+
+                // Перевірка збереження
+                const updatedList = await AsyncStorage.getItem('mistakeWords');
+                console.log('Updated mistakeWords:', JSON.parse(updatedList));
+            }
+        } catch (error) {
+            console.error('Error saving mistake word', error);
+        }
+    };
+
+    const handleChoice = async (choice) => {
+        const currentWord = words[currentWordIndex];
+
+        if (choice === currentWord.translation) {
             setScore(score + 1);
         } else {
             setIncorrect(incorrect + 1);
+            await saveToMistakeWords(currentWord);  // Додаємо слово до помилок
         }
+        nextWord();
+    };
+
+    const skipWord = async () => {
+        const currentWord = words[currentWordIndex];
+        setSkipped(skipped + 1);
+        await saveToMistakeWords(currentWord);  // Додаємо пропущене слово до помилок
         nextWord();
     };
 
@@ -75,24 +97,6 @@ const WordGame = () => {
         }
     };
 
-    const skipWord = () => {
-        setSkipped(skipped + 1);
-        nextWord();
-    };
-
-    const quitGame = () => {
-        showModal();
-    };
-
-    const resetGame = () => {
-        setModalVisible(false);
-        setCurrentWordIndex(0);
-        setScore(0);
-        setIncorrect(0);
-        setSkipped(0);
-        loadWords();
-    };
-
     const showModal = () => {
         setModalVisible(true);
         Animated.timing(fadeAnim, {
@@ -102,36 +106,33 @@ const WordGame = () => {
         }).start();
     };
 
-    if (words.length === 0) {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.noDataText}>No words available. Add words to play the game.</Text>
-            </View>
-        );
-    }
-
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Word: {words[currentWordIndex]?.word}</Text>
-            {choices.map((choice, index) => (
-                <TouchableOpacity
-                    key={index}
-                    style={styles.choiceButton}
-                    onPress={() => handleChoice(choice)}
-                >
-                    <Text style={styles.choiceText}>{choice}</Text>
-                </TouchableOpacity>
-            ))}
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.skipButton} onPress={skipWord}>
-                    <Text style={styles.buttonText}>Skip</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.quitButton} onPress={quitGame}>
-                    <Text style={styles.buttonText}>Quit Game</Text>
-                </TouchableOpacity>
-            </View>
+            {words.length > 0 ? (
+                <>
+                    <Text style={styles.title}>Word: {words[currentWordIndex]?.word}</Text>
+                    {choices.map((choice, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            style={styles.choiceButton}
+                            onPress={() => handleChoice(choice)}
+                        >
+                            <Text style={styles.choiceText}>{choice}</Text>
+                        </TouchableOpacity>
+                    ))}
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.skipButton} onPress={skipWord}>
+                            <Text style={styles.buttonText}>Skip</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.quitButton} onPress={showModal}>
+                            <Text style={styles.buttonText}>Quit Game</Text>
+                        </TouchableOpacity>
+                    </View>
+                </>
+            ) : (
+                <Text style={styles.noDataText}>No words available. Add words to play.</Text>
+            )}
 
-            {/* Модальне вікно з результатами */}
             <Modal visible={modalVisible} animationType="fade" transparent={true}>
                 <View style={styles.modalContainer}>
                     <Animated.View style={[styles.modalContent, { opacity: fadeAnim }]}>
@@ -139,7 +140,10 @@ const WordGame = () => {
                         <Text style={styles.resultText}>Correct Answers: {score}</Text>
                         <Text style={styles.resultText}>Incorrect Answers: {incorrect}</Text>
                         <Text style={styles.resultText}>Skipped: {skipped}</Text>
-                        <TouchableOpacity style={styles.closeButton} onPress={resetGame}>
+                        <TouchableOpacity
+                            style={styles.closeButton}
+                            onPress={() => setModalVisible(false)}
+                        >
                             <Text style={styles.closeButtonText}>Close</Text>
                         </TouchableOpacity>
                     </Animated.View>
@@ -171,10 +175,6 @@ const styles = StyleSheet.create({
         width: '80%',
         alignItems: 'center',
         elevation: 3,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
     },
     choiceText: {
         color: '#fff',
@@ -216,10 +216,6 @@ const styles = StyleSheet.create({
         width: '80%',
         alignItems: 'center',
         elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
     },
     modalTitle: {
         fontSize: 28,
