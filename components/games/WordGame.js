@@ -58,10 +58,6 @@ const WordGame = () => {
             if (!isWordInMistakes) {
                 const updatedMistakeWords = [...mistakeWords, word];
                 await AsyncStorage.setItem('mistakeWords', JSON.stringify(updatedMistakeWords));
-
-                // Перевірка збереження
-                const updatedList = await AsyncStorage.getItem('mistakeWords');
-                console.log('Updated mistakeWords:', JSON.parse(updatedList));
             }
         } catch (error) {
             console.error('Error saving mistake word', error);
@@ -75,7 +71,7 @@ const WordGame = () => {
             setScore(score + 1);
         } else {
             setIncorrect(incorrect + 1);
-            await saveToMistakeWords(currentWord);  // Додаємо слово до помилок
+            await saveToMistakeWords(currentWord);
         }
         nextWord();
     };
@@ -83,7 +79,7 @@ const WordGame = () => {
     const skipWord = async () => {
         const currentWord = words[currentWordIndex];
         setSkipped(skipped + 1);
-        await saveToMistakeWords(currentWord);  // Додаємо пропущене слово до помилок
+        await saveToMistakeWords(currentWord);
         nextWord();
     };
 
@@ -104,6 +100,15 @@ const WordGame = () => {
             duration: 500,
             useNativeDriver: true,
         }).start();
+    };
+
+    const resetGame = () => {
+        setCurrentWordIndex(0);
+        setScore(0);
+        setIncorrect(0);
+        setSkipped(0);
+        setModalVisible(false);
+        loadWords(); // Перезавантаження слів і скидання стану гри
     };
 
     return (
@@ -142,9 +147,9 @@ const WordGame = () => {
                         <Text style={styles.resultText}>Skipped: {skipped}</Text>
                         <TouchableOpacity
                             style={styles.closeButton}
-                            onPress={() => setModalVisible(false)}
+                            onPress={resetGame}
                         >
-                            <Text style={styles.closeButtonText}>Close</Text>
+                            <Text style={styles.closeButtonText}>OK</Text>
                         </TouchableOpacity>
                     </Animated.View>
                 </View>
@@ -152,6 +157,7 @@ const WordGame = () => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {

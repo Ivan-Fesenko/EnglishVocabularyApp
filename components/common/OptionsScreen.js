@@ -5,22 +5,24 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const OptionsScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Choose Your Activity</Text>
+            <Text style={styles.title}>Start Your Language Journey!</Text>
 
             <View style={styles.gameSection}>
                 <TouchableOpacity
                     style={[styles.button, styles.practiceButton]}
                     onPress={() => navigation.navigate('WordGame')}
+                    activeOpacity={0.8}
                 >
-                    <Icon name="game-controller-outline" size={24} color="#fff" style={styles.icon} />
+                    <Icon name="pencil-outline" size={28} color="#fff" style={styles.icon} />
                     <Text style={styles.buttonText}>Practice Words</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.button, styles.practiceButton]}
                     onPress={() => navigation.navigate('PhraseGame')}
+                    activeOpacity={0.8}
                 >
-                    <Icon name="chatbubble-outline" size={24} color="#fff" style={styles.icon} />
+                    <Icon name="chatbubble-ellipses-outline" size={28} color="#fff" style={styles.icon} />
                     <Text style={styles.buttonText}>Practice Phrases</Text>
                 </TouchableOpacity>
             </View>
@@ -29,9 +31,10 @@ const OptionsScreen = ({ navigation }) => {
                 <TouchableOpacity
                     style={[styles.button, styles.errorButton]}
                     onPress={() => navigation.navigate('Mistakes')}
+                    activeOpacity={0.8}
                 >
-                    <Icon name="warning-outline" size={24} color="#fff" style={styles.icon} />
-                    <Text style={styles.buttonText}>Work on Mistakes</Text>
+                    <Icon name="refresh-circle-outline" size={28} color="#fff" style={styles.icon} />
+                    <Text style={styles.buttonText}>Review Mistakes</Text>
                 </TouchableOpacity>
             </View>
 
@@ -39,25 +42,28 @@ const OptionsScreen = ({ navigation }) => {
                 <TouchableOpacity
                     style={[styles.button, styles.readButton]}
                     onPress={() => navigation.navigate('WordList')}
+                    activeOpacity={0.8}
                 >
-                    <Icon name="book-outline" size={24} color="#007acc" style={styles.icon} />
+                    <Icon name="book-outline" size={28} color="#5f7ac3" style={styles.icon} />
                     <Text style={styles.readButtonText}>Read Words</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.button, styles.readButton]}
                     onPress={() => navigation.navigate('PhraseList')}
+                    activeOpacity={0.8}
                 >
-                    <Icon name="book-outline" size={24} color="#007acc" style={styles.icon} />
+                    <Icon name="book-outline" size={28} color="#5f7ac3" style={styles.icon} />
                     <Text style={styles.readButtonText}>Read Phrases</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.button, styles.addButton]}
                     onPress={() => navigation.navigate('AddWordsAndPhrases')}
+                    activeOpacity={0.8}
                 >
-                    <Icon name="add-circle-outline" size={24} color="#fff" style={styles.icon} />
-                    <Text style={styles.buttonText}>Add Words and Phrases</Text>
+                    <Icon name="add-circle-outline" size={28} color="#fff" style={styles.icon} />
+                    <Text style={styles.buttonText}>Add New Words</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -67,17 +73,20 @@ const OptionsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f0f4f7',
         paddingHorizontal: 20,
         paddingVertical: 40,
         justifyContent: 'center',
+        backgroundColor: '#f3e7e9',
     },
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#007acc',
+        color: '#5f7ac3',
         textAlign: 'center',
-        marginBottom: 20,
+        marginBottom: 25,
+        textShadowColor: 'rgba(0, 0, 0, 0.1)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 3,
     },
     gameSection: {
         alignItems: 'center',
@@ -95,42 +104,42 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 15,
-        paddingHorizontal: 25,
-        borderRadius: 15,
+        paddingVertical: 16,
+        paddingHorizontal: 35,
+        borderRadius: 20,
         marginVertical: 10,
         width: '85%',
-        elevation: 5,
+        elevation: 3,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
-        shadowRadius: 5,
+        shadowRadius: 6,
     },
     practiceButton: {
-        backgroundColor: '#007acc',
+        backgroundColor: '#5f7ac3',
     },
     errorButton: {
-        backgroundColor: '#ff6347',
+        backgroundColor: '#ff7373',
     },
     readButton: {
         backgroundColor: '#fff',
         borderWidth: 2,
-        borderColor: '#007acc',
+        borderColor: '#5f7ac3',
     },
     addButton: {
-        backgroundColor: '#28a745',
+        backgroundColor: '#4CAF50',
     },
     buttonText: {
         color: '#fff',
         fontSize: 18,
         fontWeight: 'bold',
-        marginLeft: 10,
+        marginLeft: 12,
     },
     readButtonText: {
-        color: '#007acc',
+        color: '#5f7ac3',
         fontSize: 18,
         fontWeight: 'bold',
-        marginLeft: 10,
+        marginLeft: 12,
     },
     icon: {
         marginRight: 10,
@@ -138,4 +147,3 @@ const styles = StyleSheet.create({
 });
 
 export default OptionsScreen;
-

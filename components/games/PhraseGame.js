@@ -106,7 +106,7 @@ const PhraseGame = () => {
         setScore(0);
         setIncorrect(0);
         setSkipped(0);
-        loadPhrases();
+        loadPhrases(); // Скидання гри та перезавантаження фраз
     };
 
     const showModal = () => {
@@ -159,7 +159,7 @@ const PhraseGame = () => {
                         <Text style={styles.resultText}>Incorrect Answers: {incorrect}</Text>
                         <Text style={styles.resultText}>Skipped: {skipped}</Text>
                         <TouchableOpacity style={styles.closeButton} onPress={resetGame}>
-                            <Text style={styles.closeButtonText}>Close</Text>
+                            <Text style={styles.closeButtonText}>OK</Text>
                         </TouchableOpacity>
                     </Animated.View>
                 </View>

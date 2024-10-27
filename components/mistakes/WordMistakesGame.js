@@ -21,7 +21,6 @@ const WordMistakesGame = () => {
     }, []);
 
     const initializeGame = async () => {
-        // Скидання стану гри
         const loadedMistakeWords = await loadMistakeWords();
         if (loadedMistakeWords.length > 0) {
             setMistakeWords(loadedMistakeWords);
@@ -37,7 +36,6 @@ const WordMistakesGame = () => {
         try {
             const storedMistakes = await AsyncStorage.getItem('mistakeWords');
             const wordList = storedMistakes ? JSON.parse(storedMistakes) : [];
-            console.log('Завантажено помилкові слова:', wordList);
             return wordList;
         } catch (error) {
             console.error('Помилка завантаження помилкових слів:', error);
@@ -93,13 +91,12 @@ const WordMistakesGame = () => {
         );
         setMistakeWords(updatedMistakeWords);
         AsyncStorage.setItem('mistakeWords', JSON.stringify(updatedMistakeWords));
-        console.log('Оновлено список помилкових слів:', updatedMistakeWords);
     };
 
     const goToNextWord = () => {
         if (mistakeWords.length === 0) {
             setCurrentWord(null);
-            endGame(); // Завершення гри, якщо більше немає слів
+            endGame();
             return;
         }
 
@@ -109,7 +106,7 @@ const WordMistakesGame = () => {
             setCurrentWord(mistakeWords[nextIndex]);
             generateChoices(mistakeWords[nextIndex]);
         } else {
-            setCurrentWord(null); // Скидання поточного слова перед завершенням
+            setCurrentWord(null);
             endGame();
         }
     };
@@ -125,7 +122,7 @@ const WordMistakesGame = () => {
 
     const closeModal = () => {
         setModalVisible(false);
-        initializeGame(); // Почати гру з початку
+        initializeGame();
     };
 
     return (
@@ -154,9 +151,12 @@ const WordMistakesGame = () => {
             <Modal visible={modalVisible} animationType="fade" transparent={true}>
                 <View style={styles.modalContainer}>
                     <Animated.View style={[styles.modalContent, { opacity: fadeAnim }]}>
-                        <Text style={styles.modalTitle}>Mistake Review Completed</Text>
-                        <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                            <Text style={styles.closeButtonText}>Close</Text>
+                        <Text style={styles.modalTitle}>Well Done!</Text>
+                        <Text style={styles.modalMessage}>
+                            You have reviewed all mistakes!
+                        </Text>
+                        <TouchableOpacity style={styles.okButton} onPress={closeModal}>
+                            <Text style={styles.okButtonText}>OK</Text>
                         </TouchableOpacity>
                     </Animated.View>
                 </View>
@@ -164,6 +164,7 @@ const WordMistakesGame = () => {
         </View>
     );
 };
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -190,18 +191,6 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
     },
-    quitButton: {
-        backgroundColor: '#ff6347',
-        paddingVertical: 12,
-        paddingHorizontal: 30,
-        borderRadius: 10,
-        marginTop: 20,
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -210,31 +199,35 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         backgroundColor: '#fff',
-        padding: 30,
-        borderRadius: 15,
-        width: '80%',
+        padding: 40,
+        borderRadius: 20,
+        width: '85%',
         alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
     },
     modalTitle: {
-        fontSize: 28,
+        fontSize: 30,
         fontWeight: 'bold',
         color: '#007acc',
+        marginBottom: 15,
+    },
+    modalMessage: {
+        fontSize: 18,
+        textAlign: 'center',
         marginBottom: 20,
     },
-    resultText: {
-        fontSize: 18,
-        marginBottom: 10,
-    },
-    closeButton: {
-        backgroundColor: '#007acc',
+    okButton: {
+        backgroundColor: '#28a745',
         paddingVertical: 12,
-        paddingHorizontal: 30,
-        borderRadius: 10,
-        marginTop: 20,
+        paddingHorizontal: 50,
+        borderRadius: 25,
     },
-    closeButtonText: {
+    okButtonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
     },
     noDataText: {

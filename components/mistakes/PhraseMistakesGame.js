@@ -21,7 +21,6 @@ const PhraseMistakesGame = () => {
     }, []);
 
     const initializeGame = async () => {
-        // Скидання стану гри
         const loadedMistakePhrases = await loadMistakePhrases();
         if (loadedMistakePhrases.length > 0) {
             setMistakePhrases(loadedMistakePhrases);
@@ -37,7 +36,6 @@ const PhraseMistakesGame = () => {
         try {
             const storedMistakes = await AsyncStorage.getItem('phraseMistakes');
             const phraseList = storedMistakes ? JSON.parse(storedMistakes) : [];
-            console.log('Завантажено помилкові фрази:', phraseList);
             return phraseList;
         } catch (error) {
             console.error('Помилка завантаження помилкових фраз:', error);
@@ -93,13 +91,12 @@ const PhraseMistakesGame = () => {
         );
         setMistakePhrases(updatedMistakePhrases);
         AsyncStorage.setItem('phraseMistakes', JSON.stringify(updatedMistakePhrases));
-        console.log('Оновлено список помилкових фраз:', updatedMistakePhrases);
     };
 
     const goToNextPhrase = () => {
         if (mistakePhrases.length === 0) {
             setCurrentPhrase(null);
-            endGame(); // Завершення гри, якщо більше немає фраз
+            endGame();
             return;
         }
 
@@ -109,7 +106,7 @@ const PhraseMistakesGame = () => {
             setCurrentPhrase(mistakePhrases[nextIndex]);
             generateChoices(mistakePhrases[nextIndex]);
         } else {
-            setCurrentPhrase(null); // Скидання поточної фрази перед завершенням
+            setCurrentPhrase(null);
             endGame();
         }
     };
@@ -125,7 +122,7 @@ const PhraseMistakesGame = () => {
 
     const closeModal = () => {
         setModalVisible(false);
-        initializeGame(); // Почати гру з початку
+        initializeGame();
     };
 
     return (
@@ -154,9 +151,12 @@ const PhraseMistakesGame = () => {
             <Modal visible={modalVisible} animationType="fade" transparent={true}>
                 <View style={styles.modalContainer}>
                     <Animated.View style={[styles.modalContent, { opacity: fadeAnim }]}>
-                        <Text style={styles.modalTitle}>Mistake Review Completed</Text>
-                        <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                            <Text style={styles.closeButtonText}>Close</Text>
+                        <Text style={styles.modalTitle}>Well Done!</Text>
+                        <Text style={styles.modalMessage}>
+                            You have reviewed all mistakes!
+                        </Text>
+                        <TouchableOpacity style={styles.okButton} onPress={closeModal}>
+                            <Text style={styles.okButtonText}>OK</Text>
                         </TouchableOpacity>
                     </Animated.View>
                 </View>
@@ -191,23 +191,6 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
     },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: '80%',
-        marginTop: 20,
-    },
-    quitButton: {
-        backgroundColor: '#ff6347',
-        paddingVertical: 12,
-        paddingHorizontal: 30,
-        borderRadius: 10,
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -216,26 +199,35 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         backgroundColor: '#fff',
-        padding: 30,
-        borderRadius: 15,
-        width: '80%',
+        padding: 40,
+        borderRadius: 20,
+        width: '85%',
         alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
     },
     modalTitle: {
-        fontSize: 24,
+        fontSize: 30,
         fontWeight: 'bold',
         color: '#007acc',
+        marginBottom: 15,
+    },
+    modalMessage: {
+        fontSize: 18,
+        textAlign: 'center',
         marginBottom: 20,
     },
-    closeButton: {
-        backgroundColor: '#007acc',
+    okButton: {
+        backgroundColor: '#28a745',
         paddingVertical: 12,
-        paddingHorizontal: 30,
-        borderRadius: 10,
+        paddingHorizontal: 50,
+        borderRadius: 25,
     },
-    closeButtonText: {
+    okButtonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
     },
     noDataText: {
