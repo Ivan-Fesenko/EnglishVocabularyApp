@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const MistakesScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Work on Mistakes</Text>
+            <Text style={styles.title}>Work on Mistakes</Text>
 
             <TouchableOpacity
                 style={styles.button}
@@ -31,13 +31,17 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f0f4f7',
+        backgroundColor: '#f3e7e9',
     },
-    header: {
-        fontSize: 24,
+    title: {
+        fontSize: 28,
         fontWeight: 'bold',
-        color: '#007acc',
-        marginBottom: 30,
+        color: '#5f7ac3',
+        textAlign: 'center',
+        marginBottom: 25,
+        textShadowColor: 'rgba(0, 0, 0, 0.1)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 3,
     },
     button: {
         flexDirection: 'row',

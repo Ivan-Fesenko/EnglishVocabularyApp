@@ -1,5 +1,3 @@
-// Додавання слів та фраз
-
 import React, { useState } from 'react';
 import {
     View,
@@ -7,7 +5,8 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    Alert,
+    Animated,
+    ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -17,6 +16,25 @@ const AddWordsAndPhrasesScreen = () => {
     const [translation, setTranslation] = useState('');
     const [phrase, setPhrase] = useState('');
     const [phraseTranslation, setPhraseTranslation] = useState('');
+    const [message, setMessage] = useState('');
+    const [fadeAnim] = useState(new Animated.Value(0));
+
+    const showMessage = (msg) => {
+        setMessage(msg);
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+        }).start(() => {
+            setTimeout(() => {
+                Animated.timing(fadeAnim, {
+                    toValue: 0,
+                    duration: 500,
+                    useNativeDriver: true,
+                }).start();
+            }, 2000); // Затримка перед зникненням
+        });
+    };
 
     const saveWord = async () => {
         if (word && translation) {
@@ -28,12 +46,12 @@ const AddWordsAndPhrasesScreen = () => {
                 await AsyncStorage.setItem('words', JSON.stringify(words));
                 setWord('');
                 setTranslation('');
-                Alert.alert('Success', 'Word added successfully!');
+                showMessage('Word added successfully!');
             } catch (error) {
                 console.error(error);
             }
         } else {
-            Alert.alert('Error', 'Please enter both the word and its translation.');
+            showMessage('Please enter both the word and its translation.');
         }
     };
 
@@ -47,62 +65,68 @@ const AddWordsAndPhrasesScreen = () => {
                 await AsyncStorage.setItem('phrases', JSON.stringify(phrases));
                 setPhrase('');
                 setPhraseTranslation('');
-                Alert.alert('Success', 'Phrase added successfully!');
+                showMessage('Phrase added successfully!');
             } catch (error) {
                 console.error(error);
             }
         } else {
-            Alert.alert('Error', 'Please enter both the phrase and its translation.');
+            showMessage('Please enter both the phrase and its translation.');
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Add New Word</Text>
-            <View style={styles.inputContainer}>
-                <Icon name="text-outline" size={20} color="#007acc" />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Word"
-                    value={word}
-                    onChangeText={setWord}
-                />
-            </View>
-            <View style={styles.inputContainer}>
-                <Icon name="language-outline" size={20} color="#007acc" />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Translation"
-                    value={translation}
-                    onChangeText={setTranslation}
-                />
-            </View>
-            <TouchableOpacity style={styles.saveButton} onPress={saveWord}>
-                <Text style={styles.saveButtonText}>Save Word</Text>
-            </TouchableOpacity>
+            <Animated.View style={[styles.messageBox, { opacity: fadeAnim }]}>
+                <Text style={styles.messageText}>{message}</Text>
+            </Animated.View>
 
-            <Text style={styles.header}>Add New Phrase</Text>
-            <View style={styles.inputContainer}>
-                <Icon name="chatbubble-outline" size={20} color="#007acc" />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Phrase"
-                    value={phrase}
-                    onChangeText={setPhrase}
-                />
-            </View>
-            <View style={styles.inputContainer}>
-                <Icon name="language-outline" size={20} color="#007acc" />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Translation"
-                    value={phraseTranslation}
-                    onChangeText={setPhraseTranslation}
-                />
-            </View>
-            <TouchableOpacity style={styles.saveButton} onPress={savePhrase}>
-                <Text style={styles.saveButtonText}>Save Phrase</Text>
-            </TouchableOpacity>
+            <ScrollView contentContainerStyle={styles.scrollView}>
+                <Text style={styles.header}>Add New Word</Text>
+                <View style={styles.inputContainer}>
+                    <Icon name="text-outline" size={20} color="#007acc" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Word"
+                        value={word}
+                        onChangeText={setWord}
+                    />
+                </View>
+                <View style={styles.inputContainer}>
+                    <Icon name="language-outline" size={20} color="#007acc" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Translation"
+                        value={translation}
+                        onChangeText={setTranslation}
+                    />
+                </View>
+                <TouchableOpacity style={styles.saveButton} onPress={saveWord}>
+                    <Text style={styles.saveButtonText}>Save Word</Text>
+                </TouchableOpacity>
+
+                <Text style={styles.header}>Add New Phrase</Text>
+                <View style={styles.inputContainer}>
+                    <Icon name="chatbubble-outline" size={20} color="#007acc" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Phrase"
+                        value={phrase}
+                        onChangeText={setPhrase}
+                    />
+                </View>
+                <View style={styles.inputContainer}>
+                    <Icon name="language-outline" size={20} color="#007acc" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Translation"
+                        value={phraseTranslation}
+                        onChangeText={setPhraseTranslation}
+                    />
+                </View>
+                <TouchableOpacity style={styles.saveButton} onPress={savePhrase}>
+                    <Text style={styles.saveButtonText}>Save Phrase</Text>
+                </TouchableOpacity>
+            </ScrollView>
         </View>
     );
 };
@@ -110,8 +134,27 @@ const AddWordsAndPhrasesScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f0f4f7',
+        backgroundColor: '#f3e7e9',
+    },
+    scrollView: {
         padding: 20,
+    },
+    messageBox: {
+        position: 'absolute',
+        top: 10,
+        left: 0,
+        right: 0,
+        marginHorizontal: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        backgroundColor: '#4CAF50',
+        borderRadius: 10,
+        zIndex: 1,
+        alignItems: 'center',
+    },
+    messageText: {
+        color: '#fff',
+        fontSize: 16,
     },
     header: {
         fontSize: 24,

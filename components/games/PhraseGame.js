@@ -174,7 +174,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#f0f4f7',
+        backgroundColor: '#f3e7e9'
+        // backgroundColor: #f0f4f7, у разі потреби, повернути цей колір всюди
     },
     title: {
         fontSize: 24,
