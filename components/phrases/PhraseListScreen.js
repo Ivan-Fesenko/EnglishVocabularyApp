@@ -53,6 +53,7 @@ const PhraseListScreen = ({ navigation }) => {
             <ScrollView style={styles.phraseContainer}>
                 <Text style={styles.phrase}>{item.phrase} - {item.translation}</Text>
             </ScrollView>
+            <View style={styles.separator} />
             <View style={styles.actionIcons}>
                 <TouchableOpacity onPress={() => navigation.navigate('PhraseEdit', { index, item })}>
                     <Icon name="create-outline" size={24} color="#007acc" />
@@ -84,13 +85,11 @@ const styles = StyleSheet.create({
     },
     itemContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     },
-    // Контейнер для фрази з фіксованою висотою
     phraseContainer: {
         maxHeight: 60,  // Обмежуємо висоту
         flex: 1,
@@ -98,6 +97,12 @@ const styles = StyleSheet.create({
     phrase: {
         fontSize: 16,
         color: '#333',
+    },
+    separator: {
+        width: 1,
+        height: '100%',
+        backgroundColor: '#ccc',
+        marginHorizontal: 10,
     },
     actionIcons: {
         flexDirection: 'row',

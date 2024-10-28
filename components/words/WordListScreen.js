@@ -50,11 +50,12 @@ const WordListScreen = ({ navigation }) => {
     const renderItem = ({ item, index }) => (
         <View style={styles.itemContainer}>
             <Text style={styles.word}>{index + 1}. {item.word} - {item.translation}</Text>
+            <View style={styles.separator} />
             <View style={styles.actionIcons}>
                 <TouchableOpacity onPress={() => navigation.navigate('WordEdit', { index, item })}>
                     <Icon name="create-outline" size={24} color="#007acc" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => confirmDeleteWord(index)}>
+                <TouchableOpacity onPress={() => confirmDeleteWord(index)} style={styles.deleteButton}>
                     <Icon name="trash-outline" size={24} color="#ff6347" />
                 </TouchableOpacity>
             </View>
@@ -81,19 +82,28 @@ const styles = StyleSheet.create({
     },
     itemContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     },
     word: {
+        flex: 1,
         fontSize: 18,
         color: '#333',
+    },
+    separator: {
+        width: 1,
+        height: '100%',
+        backgroundColor: '#ccc',
+        marginHorizontal: 10,
     },
     actionIcons: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
+    },
+    deleteButton: {
+        marginLeft: 10,
     },
     emptyMessage: {
         textAlign: 'center',
