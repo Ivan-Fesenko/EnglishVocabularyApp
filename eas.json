@@ -1,0 +1,18 @@
+{
+    "build": {
+      "ios": {
+        "distribution": "store",
+        "autoIncrement": true,
+        "artifactName": "VocabularyApp.ipa",
+        "scheme": "VocabularyApp"
+      },
+      "android": {
+        "buildType": "apk",
+        "artifactName": "VocabularyApp.apk"
+      }
+    },
+    "cli": {
+      "version": ">= 3.0.0"
+    }
+  }
+  
