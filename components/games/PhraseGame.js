@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const PhraseGame = () => {
+const PhraseGame = ({ navigation }) => {
     const [phrases, setPhrases] = useState([]);
     const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
     const [choices, setChoices] = useState([]);
@@ -96,8 +96,13 @@ const PhraseGame = () => {
         nextPhrase();
     };
 
-    const quitGame = () => {
-        showModal();
+    const showModal = () => {
+        setModalVisible(true);
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+        }).start();
     };
 
     const resetGame = () => {
@@ -106,16 +111,7 @@ const PhraseGame = () => {
         setScore(0);
         setIncorrect(0);
         setSkipped(0);
-        loadPhrases(); // Скидання гри та перезавантаження фраз
-    };
-
-    const showModal = () => {
-        setModalVisible(true);
-        Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 500,
-            useNativeDriver: true,
-        }).start();
+        loadPhrases();
     };
 
     if (phrases.length === 0) {
@@ -142,14 +138,21 @@ const PhraseGame = () => {
                     <Text style={styles.choiceText}>{choice}</Text>
                 </TouchableOpacity>
             ))}
-            <View style={styles.buttonContainer}>
+            <View style={styles.topButtonContainer}>
                 <TouchableOpacity style={styles.skipButton} onPress={skipPhrase}>
                     <Text style={styles.buttonText}>Skip</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.quitButton} onPress={quitGame}>
-                    <Text style={styles.buttonText}>Quit</Text>
+                <TouchableOpacity style={styles.getResultsButton} onPress={showModal}>
+                    <Text style={styles.buttonText}>Get Results Now</Text>
                 </TouchableOpacity>
             </View>
+
+            <TouchableOpacity
+                style={styles.quitButton}
+                onPress={() => navigation.navigate('Options')}
+            >
+                <Text style={styles.buttonText}>Quit Game</Text>
+            </TouchableOpacity>
 
             <Modal visible={modalVisible} animationType="fade" transparent={true}>
                 <View style={styles.modalContainer}>
@@ -174,8 +177,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#f3e7e9'
-        // backgroundColor: #f0f4f7, у разі потреби, повернути цей колір всюди
+        backgroundColor: '#f3e7e9',
     },
     title: {
         fontSize: 24,
@@ -195,11 +197,12 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
     },
-    buttonContainer: {
+    topButtonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '80%',
         marginTop: 20,
+        gap: 15, // Adds spacing between buttons
     },
     skipButton: {
         backgroundColor: '#ffa500',
@@ -207,10 +210,18 @@ const styles = StyleSheet.create({
         paddingHorizontal: 30,
         borderRadius: 10,
     },
-    quitButton: {
-        backgroundColor: '#ff6347',
+    getResultsButton: {
+        backgroundColor: '#5f7ac3',
         paddingVertical: 12,
         paddingHorizontal: 30,
+        borderRadius: 10,
+    },
+    quitButton: {
+        position: 'absolute',
+        bottom: 100, // Adjusts position higher
+        backgroundColor: '#ff6347',
+        paddingVertical: 12,
+        paddingHorizontal: 40,
         borderRadius: 10,
     },
     buttonText: {

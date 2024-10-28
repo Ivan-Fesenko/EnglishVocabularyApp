@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, Animated, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const WordGame = () => {
+const WordGame = ({ navigation }) => {
     const [words, setWords] = useState([]);
     const [currentWordIndex, setCurrentWordIndex] = useState(0);
     const [choices, setChoices] = useState([]);
@@ -108,7 +108,7 @@ const WordGame = () => {
         setIncorrect(0);
         setSkipped(0);
         setModalVisible(false);
-        loadWords(); // Перезавантаження слів і скидання стану гри
+        loadWords();
     };
 
     return (
@@ -125,18 +125,25 @@ const WordGame = () => {
                             <Text style={styles.choiceText}>{choice}</Text>
                         </TouchableOpacity>
                     ))}
-                    <View style={styles.buttonContainer}>
+                    <View style={styles.topButtonContainer}>
                         <TouchableOpacity style={styles.skipButton} onPress={skipWord}>
                             <Text style={styles.buttonText}>Skip</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.quitButton} onPress={showModal}>
-                            <Text style={styles.buttonText}>Quit Game</Text>
+                        <TouchableOpacity style={styles.getResultsButton} onPress={showModal}>
+                            <Text style={styles.buttonText}>Get Results Now</Text>
                         </TouchableOpacity>
                     </View>
                 </>
             ) : (
                 <Text style={styles.noDataText}>No words available. Add words to play.</Text>
             )}
+
+            <TouchableOpacity
+                style={styles.quitButton}
+                onPress={() => navigation.navigate('Options')}
+            >
+                <Text style={styles.buttonText}>Quit Game</Text>
+            </TouchableOpacity>
 
             <Modal visible={modalVisible} animationType="fade" transparent={true}>
                 <View style={styles.modalContainer}>
@@ -157,7 +164,6 @@ const WordGame = () => {
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {
@@ -186,11 +192,12 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
     },
-    buttonContainer: {
+    topButtonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '80%',
         marginTop: 20,
+        gap: 15, // Adds spacing between "Skip" and "Get Results Now" buttons
     },
     skipButton: {
         backgroundColor: '#ffa500',
@@ -198,10 +205,18 @@ const styles = StyleSheet.create({
         paddingHorizontal: 30,
         borderRadius: 10,
     },
-    quitButton: {
-        backgroundColor: '#ff6347',
+    getResultsButton: {
+        backgroundColor: '#5f7ac3',
         paddingVertical: 12,
         paddingHorizontal: 30,
+        borderRadius: 10,
+    },
+    quitButton: {
+        position: 'absolute',
+        bottom: 100, // Moves "Quit Game" button higher
+        backgroundColor: '#ff6347',
+        paddingVertical: 12,
+        paddingHorizontal: 40,
         borderRadius: 10,
     },
     buttonText: {
