@@ -23,7 +23,7 @@ const InfoScreen = () => {
                 Додаток ідеально підходить для тих, хто хоче покращити свої мовні навички
                 інтерактивно та ефективно.
             </Text>
-            <Text style={styles.footer}>Версія 1.0.0</Text>
+            <Text style={styles.footer}>Версія 1.1.1</Text>
         </ScrollView>
     );
 };

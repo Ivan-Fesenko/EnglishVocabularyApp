@@ -8,18 +8,20 @@ const OptionsScreen = ({ navigation }) => {
             <Text style={styles.title}>Start Your Language Journey!</Text>
 
             <View style={styles.gameSection}>
+                {/* Оновлена логіка переходу для гри в слова */}
                 <TouchableOpacity
                     style={[styles.button, styles.practiceButton]}
-                    onPress={() => navigation.navigate('WordGame')}
+                    onPress={() => navigation.navigate('WordSectionSelection')}
                     activeOpacity={0.8}
                 >
                     <Icon name="pencil-outline" size={28} color="#fff" style={styles.icon} />
                     <Text style={styles.buttonText}>Practice Words</Text>
                 </TouchableOpacity>
 
+
                 <TouchableOpacity
                     style={[styles.button, styles.practiceButton]}
-                    onPress={() => navigation.navigate('PhraseGame')}
+                    onPress={() => navigation.navigate('PhraseSectionSelection')}
                     activeOpacity={0.8}
                 >
                     <Icon name="chatbubble-ellipses-outline" size={28} color="#fff" style={styles.icon} />

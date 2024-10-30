@@ -43,9 +43,9 @@ const AddWordsAndPhrasesScreen = () => {
                 const storedWords = await AsyncStorage.getItem('words');
                 const words = storedWords ? JSON.parse(storedWords) : [];
 
-                // Перевірка на дублювання слова
+                // Перевірка на дублювання слова з додатковою перевіркою на існування
                 const isDuplicate = words.some(
-                    (item) => item.word.toLowerCase() === word.toLowerCase()
+                    (item) => item.word && item.word.toLowerCase() === word.toLowerCase()
                 );
 
                 if (isDuplicate) {
@@ -72,9 +72,9 @@ const AddWordsAndPhrasesScreen = () => {
                 const storedPhrases = await AsyncStorage.getItem('phrases');
                 const phrases = storedPhrases ? JSON.parse(storedPhrases) : [];
 
-                // Перевірка на дублювання фрази
+                // Перевірка на дублювання фрази з додатковою перевіркою на існування
                 const isDuplicate = phrases.some(
-                    (item) => item.phrase.toLowerCase() === phrase.toLowerCase()
+                    (item) => item.phrase && item.phrase.toLowerCase() === phrase.toLowerCase()
                 );
 
                 if (isDuplicate) {

@@ -17,6 +17,11 @@ import WordMistakesGame from './components/mistakes/WordMistakesGame';
 import PhraseMistakesGame from './components/mistakes/PhraseMistakesGame';
 import MistakeScreen from './components/mistakes/MistakeScreen';
 
+// Додаємо імпорт WordSectionSelection
+import WordSectionSelection from './components/games/WordSectionSelection';
+// Додаємо імпорт PhraseSectionSelection
+import PhraseSectionSelection from './components/games/PhraseSectionSelection';
+
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -86,10 +91,22 @@ export default function App() {
           component={AddWordsAndPhrasesScreen}
           options={{ title: 'Add Words and Phrases' }}
         />
+        {/* Додаємо екран WordSectionSelection */}
+        <Stack.Screen
+          name="WordSectionSelection"
+          component={WordSectionSelection}
+          options={{ title: 'Select a Section' }}
+        />
         <Stack.Screen
           name="WordGame"
           component={WordGame}
           options={{ title: 'Word Game' }}
+        />
+        {/* Додаємо екран PhraseSectionSelection */}
+        <Stack.Screen
+          name="PhraseSectionSelection"
+          component={PhraseSectionSelection}
+          options={{ title: 'Select a Section' }}
         />
         <Stack.Screen
           name="PhraseGame"

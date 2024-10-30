@@ -1,32 +1,70 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, SectionList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const WordListScreen = ({ navigation }) => {
+const WordListScreen = ({ navigation, route }) => {
     const [words, setWords] = useState([]);
+    const [sections, setSections] = useState([]);
+    const selectedSectionIndex = route.params?.selectedSectionIndex ?? null;  // Отримуємо вибрану секцію
 
     useEffect(() => {
         const loadWords = async () => {
             try {
                 const storedWords = await AsyncStorage.getItem('words');
                 if (storedWords !== null) {
-                    setWords(JSON.parse(storedWords));
+                    const parsedWords = JSON.parse(storedWords);
+                    setWords(parsedWords);
+                    divideIntoSections(parsedWords);
                 }
             } catch (error) {
                 console.error('Error loading words', error);
             }
         };
 
-        // Listener to reload words when screen is focused
         const focusListener = navigation.addListener('focus', () => {
             loadWords();
         });
 
-        return focusListener;  // Cleanup the listener when the component is unmounted
+        return focusListener;
     }, [navigation]);
 
-    const confirmDeleteWord = (index) => {
+    const divideIntoSections = (wordsArray) => {
+        const newSections = [];
+        for (let i = 0; i < wordsArray.length; i += 50) {
+            const sectionWords = wordsArray.slice(i, i + 50);
+            newSections.push({
+                title: `Section ${Math.floor(i / 50) + 1}: ${sectionWords.length} words`,
+                data: sectionWords,
+            });
+        }
+
+        // Відображаємо тільки вибрану секцію, якщо така є
+        if (selectedSectionIndex !== null) {
+            setSections([newSections[selectedSectionIndex]]);
+        } else {
+            setSections(newSections);
+        }
+    };
+
+    const renderItem = ({ item, index, section }) => (
+        <View style={styles.itemContainer}>
+            <Text style={styles.word}>
+                {index + 1}. {item.word ? item.word.toLowerCase() : ''} - {item.translation}
+            </Text>
+            <View style={styles.separator} />
+            <View style={styles.actionIcons}>
+                <TouchableOpacity onPress={() => navigation.navigate('WordEdit', { index, item })}>
+                    <Icon name="create-outline" size={24} color="#007acc" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => confirmDeleteWord(sections.indexOf(section), index)} style={styles.deleteButton}>
+                    <Icon name="trash-outline" size={24} color="#ff6347" />
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
+
+    const confirmDeleteWord = (sectionIndex, wordIndex) => {
         Alert.alert(
             "Confirm Delete",
             "Are you sure you want to delete this word?",
@@ -34,40 +72,32 @@ const WordListScreen = ({ navigation }) => {
                 { text: "Cancel", style: "cancel" },
                 {
                     text: "Delete",
-                    onPress: () => deleteWord(index),
+                    onPress: () => deleteWord(sectionIndex, wordIndex),
                 },
             ],
             { cancelable: true }
         );
     };
 
-    const deleteWord = async (id) => {
-        const updatedWords = words.filter((_, index) => index !== id);
-        setWords(updatedWords);
-        await AsyncStorage.setItem('words', JSON.stringify(updatedWords));
+    const deleteWord = async (sectionIndex, wordIndex) => {
+        const sectionWords = sections[sectionIndex].data;
+        const updatedWords = sectionWords.filter((_, index) => index !== wordIndex);
+        const allWords = sections.flatMap((section) => section.data);
+        allWords.splice(sectionIndex * 50 + wordIndex, 1);
+        setWords(allWords);
+        divideIntoSections(allWords);
+        await AsyncStorage.setItem('words', JSON.stringify(allWords));
     };
-
-    const renderItem = ({ item, index }) => (
-        <View style={styles.itemContainer}>
-            <Text style={styles.word}>{index + 1}. {item.word} - {item.translation}</Text>
-            <View style={styles.separator} />
-            <View style={styles.actionIcons}>
-                <TouchableOpacity onPress={() => navigation.navigate('WordEdit', { index, item })}>
-                    <Icon name="create-outline" size={24} color="#007acc" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => confirmDeleteWord(index)} style={styles.deleteButton}>
-                    <Icon name="trash-outline" size={24} color="#ff6347" />
-                </TouchableOpacity>
-            </View>
-        </View>
-    );
 
     return (
         <View style={styles.container}>
-            <FlatList
-                data={words}
+            <SectionList
+                sections={sections}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderItem}
+                renderSectionHeader={({ section: { title } }) => (
+                    <Text style={styles.sectionHeader}>{title}</Text>
+                )}
                 ListEmptyComponent={<Text style={styles.emptyMessage}>No words added yet.</Text>}
             />
         </View>
@@ -79,6 +109,14 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: '#f3e7e9',
+    },
+    sectionHeader: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        backgroundColor: '#eee',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        marginVertical: 10,
     },
     itemContainer: {
         flexDirection: 'row',

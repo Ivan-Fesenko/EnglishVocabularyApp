@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, Animated, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const WordGame = ({ navigation }) => {
+const WordGame = ({ route, navigation }) => {
     const [words, setWords] = useState([]);
     const [currentWordIndex, setCurrentWordIndex] = useState(0);
     const [choices, setChoices] = useState([]);
@@ -13,21 +13,12 @@ const WordGame = ({ navigation }) => {
     const [fadeAnim] = useState(new Animated.Value(0));
 
     useEffect(() => {
-        loadWords();
-    }, []);
-
-    const loadWords = async () => {
-        try {
-            const storedWords = await AsyncStorage.getItem('words');
-            const wordList = storedWords ? JSON.parse(storedWords) : [];
-            setWords(wordList.sort(() => Math.random() - 0.5));
-            if (wordList.length > 0) {
-                generateChoices(wordList[0], wordList);
-            }
-        } catch (error) {
-            console.error('Error loading words', error);
+        const { words: selectedWords } = route.params; // Отримуємо слова з параметрів навігації
+        if (selectedWords) {
+            setWords(selectedWords.sort(() => Math.random() - 0.5));
+            generateChoices(selectedWords[0], selectedWords);
         }
-    };
+    }, [route.params]);
 
     const generateChoices = (currentWord, allWords) => {
         const correctChoice = currentWord.translation;
@@ -108,7 +99,10 @@ const WordGame = ({ navigation }) => {
         setIncorrect(0);
         setSkipped(0);
         setModalVisible(false);
-        loadWords();
+        // Заново ініціалізуємо гру з поточними словами
+        if (words.length > 0) {
+            generateChoices(words[0], words);
+        }
     };
 
     const choiceLabels = ['A', 'B', 'C', 'D'];

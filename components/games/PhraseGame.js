@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const PhraseGame = ({ navigation }) => {
+const PhraseGame = ({ route, navigation }) => {
     const [phrases, setPhrases] = useState([]);
     const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
     const [choices, setChoices] = useState([]);
@@ -20,22 +20,14 @@ const PhraseGame = ({ navigation }) => {
     const [fadeAnim] = useState(new Animated.Value(0));
 
     useEffect(() => {
-        loadPhrases();
-    }, []);
-
-    const loadPhrases = async () => {
-        try {
-            const storedPhrases = await AsyncStorage.getItem('phrases');
-            let phraseList = storedPhrases ? JSON.parse(storedPhrases) : [];
-            phraseList = phraseList.sort(() => Math.random() - 0.5);
-            setPhrases(phraseList);
-            if (phraseList.length > 0) {
-                generateChoices(phraseList[0], phraseList);
-            }
-        } catch (error) {
-            console.error('Error loading phrases', error);
+        // Get the selected phrases from navigation params
+        const { selectedPhrases } = route.params;
+        if (selectedPhrases) {
+            // Shuffle the phrases and initialize the game
+            setPhrases(selectedPhrases.sort(() => Math.random() - 0.5));
+            generateChoices(selectedPhrases[0], selectedPhrases);
         }
-    };
+    }, [route.params]);
 
     const generateChoices = (currentPhrase, allPhrases) => {
         const correctChoice = currentPhrase.translation;
@@ -58,6 +50,7 @@ const PhraseGame = ({ navigation }) => {
 
     const handleChoice = async (choice) => {
         const currentPhrase = phrases[currentPhraseIndex];
+
         if (choice === currentPhrase.translation) {
             setScore(score + 1);
         } else {
@@ -111,7 +104,11 @@ const PhraseGame = ({ navigation }) => {
         setScore(0);
         setIncorrect(0);
         setSkipped(0);
-        loadPhrases();
+        const { selectedPhrases } = route.params;
+        if (selectedPhrases) {
+            setPhrases(selectedPhrases.sort(() => Math.random() - 0.5));
+            generateChoices(selectedPhrases[0], selectedPhrases);
+        }
     };
 
     const choiceLabels = ['A', 'B', 'C', 'D'];
@@ -305,7 +302,6 @@ const styles = StyleSheet.create({
     closeButtonText: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: 'bold',
     },
     noDataText: {
         fontSize: 18,
@@ -315,4 +311,3 @@ const styles = StyleSheet.create({
 });
 
 export default PhraseGame;
-
