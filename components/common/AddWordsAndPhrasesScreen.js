@@ -32,7 +32,7 @@ const AddWordsAndPhrasesScreen = () => {
                     duration: 500,
                     useNativeDriver: true,
                 }).start();
-            }, 2000); // Затримка перед зникненням
+            }, 2000);
         });
     };
 
@@ -42,11 +42,21 @@ const AddWordsAndPhrasesScreen = () => {
             try {
                 const storedWords = await AsyncStorage.getItem('words');
                 const words = storedWords ? JSON.parse(storedWords) : [];
-                words.push(newWord);
-                await AsyncStorage.setItem('words', JSON.stringify(words));
-                setWord('');
-                setTranslation('');
-                showMessage('Word added successfully!');
+
+                // Перевірка на дублювання слова
+                const isDuplicate = words.some(
+                    (item) => item.word.toLowerCase() === word.toLowerCase()
+                );
+
+                if (isDuplicate) {
+                    showMessage('This word already exists!');
+                } else {
+                    words.push(newWord);
+                    await AsyncStorage.setItem('words', JSON.stringify(words));
+                    setWord('');
+                    setTranslation('');
+                    showMessage('Word added successfully!');
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -61,11 +71,21 @@ const AddWordsAndPhrasesScreen = () => {
             try {
                 const storedPhrases = await AsyncStorage.getItem('phrases');
                 const phrases = storedPhrases ? JSON.parse(storedPhrases) : [];
-                phrases.push(newPhrase);
-                await AsyncStorage.setItem('phrases', JSON.stringify(phrases));
-                setPhrase('');
-                setPhraseTranslation('');
-                showMessage('Phrase added successfully!');
+
+                // Перевірка на дублювання фрази
+                const isDuplicate = phrases.some(
+                    (item) => item.phrase.toLowerCase() === phrase.toLowerCase()
+                );
+
+                if (isDuplicate) {
+                    showMessage('This phrase already exists!');
+                } else {
+                    phrases.push(newPhrase);
+                    await AsyncStorage.setItem('phrases', JSON.stringify(phrases));
+                    setPhrase('');
+                    setPhraseTranslation('');
+                    showMessage('Phrase added successfully!');
+                }
             } catch (error) {
                 console.error(error);
             }
