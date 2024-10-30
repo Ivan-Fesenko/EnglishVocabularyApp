@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const WordListScreen = ({ navigation, route }) => {
     const [words, setWords] = useState([]);
     const [sections, setSections] = useState([]);
-    const selectedSectionIndex = route.params?.selectedSectionIndex ?? null;  // Отримуємо вибрану секцію
+    const selectedSectionIndex = route.params?.selectedSectionIndex ?? null;
 
     useEffect(() => {
         const loadWords = async () => {
@@ -39,7 +39,6 @@ const WordListScreen = ({ navigation, route }) => {
             });
         }
 
-        // Відображаємо тільки вибрану секцію, якщо така є
         if (selectedSectionIndex !== null) {
             setSections([newSections[selectedSectionIndex]]);
         } else {
@@ -96,7 +95,9 @@ const WordListScreen = ({ navigation, route }) => {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderItem}
                 renderSectionHeader={({ section: { title } }) => (
-                    <Text style={styles.sectionHeader}>{title}</Text>
+                    <View style={styles.sectionHeaderContainer}>
+                        <Text style={styles.sectionHeaderText}>{title}</Text>
+                    </View>
                 )}
                 ListEmptyComponent={<Text style={styles.emptyMessage}>No words added yet.</Text>}
             />
@@ -110,13 +111,19 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#f3e7e9',
     },
-    sectionHeader: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        backgroundColor: '#eee',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
+    sectionHeaderContainer: {
+        backgroundColor: 'rgba(95, 122, 195, 0.7)', // Прозорий фон
+        paddingVertical: 10,
+        paddingHorizontal: 15,
         marginVertical: 10,
+        borderRadius: 10,
+        elevation: 2,
+    },
+    sectionHeaderText: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#fff',
+        textAlign: 'center',
     },
     itemContainer: {
         flexDirection: 'row',

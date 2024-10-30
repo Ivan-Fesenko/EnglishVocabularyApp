@@ -88,7 +88,9 @@ const PhraseListScreen = ({ navigation }) => {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderItem}
                 renderSectionHeader={({ section: { title } }) => (
-                    <Text style={styles.sectionHeader}>{title}</Text>
+                    <View style={styles.sectionHeaderContainer}>
+                        <Text style={styles.sectionHeaderText}>{title}</Text>
+                    </View>
                 )}
                 ListEmptyComponent={<Text style={styles.emptyMessage}>No phrases added yet.</Text>}
             />
@@ -102,13 +104,19 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#f3e7e9',
     },
-    sectionHeader: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        backgroundColor: '#eee',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
+    sectionHeaderContainer: {
+        backgroundColor: 'rgba(95, 122, 195, 0.7)', // Прозорий фон
+        paddingVertical: 10,
+        paddingHorizontal: 15,
         marginVertical: 10,
+        borderRadius: 10,
+        elevation: 2,
+    },
+    sectionHeaderText: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#fff',
+        textAlign: 'center',
     },
     itemContainer: {
         flexDirection: 'row',
