@@ -34,7 +34,7 @@ const WordGame = ({ navigation }) => {
         const otherWords = allWords.filter(word => word.translation !== correctChoice);
 
         let choicesArray = [correctChoice];
-        while (choicesArray.length < 3 && otherWords.length > 0) {
+        while (choicesArray.length < 4 && otherWords.length > 0) {
             const randomIndex = Math.floor(Math.random() * otherWords.length);
             const randomWord = otherWords.splice(randomIndex, 1)[0];
             if (!choicesArray.includes(randomWord.translation)) {
@@ -44,6 +44,18 @@ const WordGame = ({ navigation }) => {
 
         choicesArray.sort(() => Math.random() - 0.5);
         setChoices(choicesArray);
+    };
+
+    const handleChoice = async (choice) => {
+        const currentWord = words[currentWordIndex];
+
+        if (choice === currentWord.translation) {
+            setScore(score + 1);
+        } else {
+            setIncorrect(incorrect + 1);
+            await saveToMistakeWords(currentWord);
+        }
+        nextWord();
     };
 
     const saveToMistakeWords = async (word) => {
@@ -62,18 +74,6 @@ const WordGame = ({ navigation }) => {
         } catch (error) {
             console.error('Error saving mistake word', error);
         }
-    };
-
-    const handleChoice = async (choice) => {
-        const currentWord = words[currentWordIndex];
-
-        if (choice === currentWord.translation) {
-            setScore(score + 1);
-        } else {
-            setIncorrect(incorrect + 1);
-            await saveToMistakeWords(currentWord);
-        }
-        nextWord();
     };
 
     const skipWord = async () => {
@@ -111,20 +111,31 @@ const WordGame = ({ navigation }) => {
         loadWords();
     };
 
+    const choiceLabels = ['A', 'B', 'C', 'D'];
+
     return (
         <View style={styles.container}>
             {words.length > 0 ? (
                 <>
-                    <Text style={styles.title}>Word: {words[currentWordIndex]?.word}</Text>
+                    <View style={styles.wordContainer}>
+                        <Text style={styles.wordText}>{words[currentWordIndex]?.word}</Text>
+                    </View>
+                    <Text style={styles.promptText}>Choose the correct translation:</Text>
+
                     {choices.map((choice, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            style={styles.choiceButton}
-                            onPress={() => handleChoice(choice)}
-                        >
-                            <Text style={styles.choiceText}>{choice}</Text>
-                        </TouchableOpacity>
+                        <View key={index} style={styles.choiceContainer}>
+                            <View style={styles.choiceLabelContainer}>
+                                <Text style={styles.choiceLabel}>{choiceLabels[index]}</Text>
+                            </View>
+                            <TouchableOpacity
+                                style={styles.choiceButton}
+                                onPress={() => handleChoice(choice)}
+                            >
+                                <Text style={styles.choiceText}>{choice}</Text>
+                            </TouchableOpacity>
+                        </View>
                     ))}
+
                     <View style={styles.topButtonContainer}>
                         <TouchableOpacity style={styles.skipButton} onPress={skipWord}>
                             <Text style={styles.buttonText}>Skip</Text>
@@ -133,17 +144,17 @@ const WordGame = ({ navigation }) => {
                             <Text style={styles.buttonText}>Get Results Now</Text>
                         </TouchableOpacity>
                     </View>
+
+                    <TouchableOpacity
+                        style={styles.quitButton}
+                        onPress={() => navigation.navigate('Options')}
+                    >
+                        <Text style={styles.buttonText}>Quit Game</Text>
+                    </TouchableOpacity>
                 </>
             ) : (
                 <Text style={styles.noDataText}>No words available. Add words to play.</Text>
             )}
-
-            <TouchableOpacity
-                style={styles.quitButton}
-                onPress={() => navigation.navigate('Options')}
-            >
-                <Text style={styles.buttonText}>Quit Game</Text>
-            </TouchableOpacity>
 
             <Modal visible={modalVisible} animationType="fade" transparent={true}>
                 <View style={styles.modalContainer}>
@@ -173,20 +184,52 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#f3e7e9',
     },
-    title: {
-        fontSize: 24,
+    wordContainer: {
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 15,
+        backgroundColor: '#4ade80',
+        elevation: 5,
+        marginBottom: 15,
+    },
+    wordText: {
+        fontSize: 32,
         fontWeight: 'bold',
-        color: '#007acc',
+        color: '#1f2937',
+    },
+    promptText: {
+        fontSize: 18,
+        color: '#4b5563',
         marginBottom: 20,
+        textAlign: 'center',
+    },
+    choiceContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 8,
+        width: '90%',
+    },
+    choiceLabelContainer: {
+        backgroundColor: '#2563eb',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+    },
+    choiceLabel: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#fff',
     },
     choiceButton: {
-        backgroundColor: '#007acc',
+        backgroundColor: '#1E90FF',
+        flex: 1,
         padding: 15,
-        marginVertical: 10,
-        borderRadius: 10,
-        width: '80%',
+        borderRadius: 25,
         alignItems: 'center',
-        elevation: 3,
+        elevation: 5,
     },
     choiceText: {
         color: '#fff',
@@ -195,29 +238,28 @@ const styles = StyleSheet.create({
     topButtonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: '80%',
-        marginTop: 20,
-        gap: 15, // Adds spacing between "Skip" and "Get Results Now" buttons
+        width: '90%',
+        marginTop: 30,
+        marginBottom: 20,
     },
     skipButton: {
-        backgroundColor: '#ffa500',
+        backgroundColor: '#f59e0b',
         paddingVertical: 12,
         paddingHorizontal: 30,
-        borderRadius: 10,
+        borderRadius: 20,
     },
     getResultsButton: {
-        backgroundColor: '#5f7ac3',
+        backgroundColor: '#9333ea',
         paddingVertical: 12,
         paddingHorizontal: 30,
-        borderRadius: 10,
+        borderRadius: 20,
     },
     quitButton: {
-        position: 'absolute',
-        bottom: 100, // Moves "Quit Game" button higher
-        backgroundColor: '#ff6347',
+        backgroundColor: '#ef4444',
         paddingVertical: 12,
         paddingHorizontal: 40,
-        borderRadius: 10,
+        borderRadius: 20,
+        marginTop: 20,
     },
     buttonText: {
         color: '#fff',
@@ -233,7 +275,7 @@ const styles = StyleSheet.create({
     modalContent: {
         backgroundColor: '#fff',
         padding: 30,
-        borderRadius: 15,
+        borderRadius: 20,
         width: '80%',
         alignItems: 'center',
         elevation: 5,
@@ -241,7 +283,7 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#007acc',
+        color: '#1f2937',
         marginBottom: 20,
     },
     resultText: {
@@ -249,10 +291,10 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     closeButton: {
-        backgroundColor: '#007acc',
+        backgroundColor: '#2563eb',
         paddingVertical: 12,
         paddingHorizontal: 30,
-        borderRadius: 10,
+        borderRadius: 20,
         marginTop: 20,
     },
     closeButtonText: {
@@ -262,7 +304,7 @@ const styles = StyleSheet.create({
     },
     noDataText: {
         fontSize: 18,
-        color: '#ff6347',
+        color: '#ef4444',
         textAlign: 'center',
     },
 });

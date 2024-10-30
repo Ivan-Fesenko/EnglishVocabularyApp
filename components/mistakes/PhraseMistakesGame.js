@@ -56,7 +56,7 @@ const PhraseMistakesGame = () => {
             );
 
             let choicesArray = [correctChoice];
-            while (choicesArray.length < 3 && otherPhrases.length > 0) {
+            while (choicesArray.length < 4 && otherPhrases.length > 0) {
                 const randomIndex = Math.floor(Math.random() * otherPhrases.length);
                 const randomPhrase = otherPhrases.splice(randomIndex, 1)[0];
                 if (randomPhrase && !choicesArray.includes(randomPhrase.translation)) {
@@ -64,7 +64,7 @@ const PhraseMistakesGame = () => {
                 }
             }
 
-            while (choicesArray.length < 3) {
+            while (choicesArray.length < 4) {
                 choicesArray.push('No answer');
             }
 
@@ -125,21 +125,31 @@ const PhraseMistakesGame = () => {
         initializeGame();
     };
 
+    const choiceLabels = ['A', 'B', 'C', 'D'];
+
     return (
         <View style={styles.container}>
             {currentPhrase ? (
                 <>
-                    <Text style={styles.title}>
-                        Phrase: {currentPhrase.phrase}
-                    </Text>
+                    <View style={styles.highlightedPhraseContainer}>
+                        <Text style={styles.highlightedPhraseText}>
+                            {currentPhrase.phrase}
+                        </Text>
+                    </View>
+                    <Text style={styles.promptText}>Choose the correct translation:</Text>
+
                     {choices.map((choice, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            style={styles.choiceButton}
-                            onPress={() => handleChoice(choice)}
-                        >
-                            <Text style={styles.choiceText}>{choice}</Text>
-                        </TouchableOpacity>
+                        <View key={index} style={styles.choiceContainer}>
+                            <View style={styles.choiceLabelContainer}>
+                                <Text style={styles.choiceLabel}>{choiceLabels[index]}</Text>
+                            </View>
+                            <TouchableOpacity
+                                style={styles.choiceButton}
+                                onPress={() => handleChoice(choice)}
+                            >
+                                <Text style={styles.choiceText}>{choice}</Text>
+                            </TouchableOpacity>
+                        </View>
                     ))}
                 </>
             ) : (
@@ -173,19 +183,53 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#f3e7e9',
     },
-    title: {
-        fontSize: 24,
+    highlightedPhraseContainer: {
+        padding: 15,
+        backgroundColor: '#ffd700', // Зелене виділення
+        borderRadius: 20,
+        elevation: 5,
+        marginBottom: 15,
+        width: '90%',
+        alignItems: 'center',
+    },
+    highlightedPhraseText: {
+        fontSize: 28,
         fontWeight: 'bold',
-        color: '#007acc',
+        color: '#1f2937',
+    },
+    promptText: {
+        fontSize: 18,
+        color: '#4b5563',
         marginBottom: 20,
+        textAlign: 'center',
+    },
+    choiceContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 8,
+        width: '90%',
+    },
+    choiceLabelContainer: {
+        backgroundColor: '#2563eb',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+    },
+    choiceLabel: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#fff',
     },
     choiceButton: {
-        backgroundColor: '#007acc',
+        backgroundColor: '#1E90FF',
+        flex: 1,
         padding: 15,
-        marginVertical: 10,
-        borderRadius: 10,
-        width: '80%',
+        borderRadius: 25,
         alignItems: 'center',
+        elevation: 5,
     },
     choiceText: {
         color: '#fff',
@@ -203,10 +247,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         width: '85%',
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 5 },
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
     },
     modalTitle: {
         fontSize: 30,

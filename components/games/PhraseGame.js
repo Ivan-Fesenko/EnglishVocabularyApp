@@ -44,7 +44,7 @@ const PhraseGame = ({ navigation }) => {
         );
 
         let choicesArray = [correctChoice];
-        while (choicesArray.length < 3 && otherPhrases.length > 0) {
+        while (choicesArray.length < 4 && otherPhrases.length > 0) {
             const randomIndex = Math.floor(Math.random() * otherPhrases.length);
             const randomPhrase = otherPhrases.splice(randomIndex, 1)[0];
             if (!choicesArray.includes(randomPhrase.translation)) {
@@ -114,45 +114,54 @@ const PhraseGame = ({ navigation }) => {
         loadPhrases();
     };
 
-    if (phrases.length === 0) {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.noDataText}>
-                    No phrases available. Add phrases to play the game.
-                </Text>
-            </View>
-        );
-    }
+    const choiceLabels = ['A', 'B', 'C', 'D'];
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>
-                Phrase: {phrases[currentPhraseIndex]?.phrase}
-            </Text>
-            {choices.map((choice, index) => (
-                <TouchableOpacity
-                    key={index}
-                    style={styles.choiceButton}
-                    onPress={() => handleChoice(choice)}
-                >
-                    <Text style={styles.choiceText}>{choice}</Text>
-                </TouchableOpacity>
-            ))}
-            <View style={styles.topButtonContainer}>
-                <TouchableOpacity style={styles.skipButton} onPress={skipPhrase}>
-                    <Text style={styles.buttonText}>Skip</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.getResultsButton} onPress={showModal}>
-                    <Text style={styles.buttonText}>Get Results Now</Text>
-                </TouchableOpacity>
-            </View>
+            {phrases.length > 0 ? (
+                <>
+                    <View style={styles.highlightedPhraseContainer}>
+                        <Text style={styles.highlightedPhraseText}>
+                            {phrases[currentPhraseIndex]?.phrase}
+                        </Text>
+                    </View>
+                    <Text style={styles.promptText}>Choose the correct translation:</Text>
 
-            <TouchableOpacity
-                style={styles.quitButton}
-                onPress={() => navigation.navigate('Options')}
-            >
-                <Text style={styles.buttonText}>Quit Game</Text>
-            </TouchableOpacity>
+                    {choices.map((choice, index) => (
+                        <View key={index} style={styles.choiceContainer}>
+                            <View style={styles.choiceLabelContainer}>
+                                <Text style={styles.choiceLabel}>{choiceLabels[index]}</Text>
+                            </View>
+                            <TouchableOpacity
+                                style={styles.choiceButton}
+                                onPress={() => handleChoice(choice)}
+                            >
+                                <Text style={styles.choiceText}>{choice}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+
+                    <View style={styles.topButtonContainer}>
+                        <TouchableOpacity style={styles.skipButton} onPress={skipPhrase}>
+                            <Text style={styles.buttonText}>Skip</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.getResultsButton} onPress={showModal}>
+                            <Text style={styles.buttonText}>Get Results Now</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <TouchableOpacity
+                        style={styles.quitButton}
+                        onPress={() => navigation.navigate('Options')}
+                    >
+                        <Text style={styles.buttonText}>Quit Game</Text>
+                    </TouchableOpacity>
+                </>
+            ) : (
+                <Text style={styles.noDataText}>
+                    No phrases available. Add phrases to play the game.
+                </Text>
+            )}
 
             <Modal visible={modalVisible} animationType="fade" transparent={true}>
                 <View style={styles.modalContainer}>
@@ -179,19 +188,53 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#f3e7e9',
     },
-    title: {
-        fontSize: 24,
+    highlightedPhraseContainer: {
+        padding: 15,
+        backgroundColor: '#ffd700',
+        borderRadius: 20,
+        elevation: 5,
+        marginBottom: 15,
+        width: '90%',
+        alignItems: 'center',
+    },
+    highlightedPhraseText: {
+        fontSize: 28,
         fontWeight: 'bold',
-        color: '#007acc',
+        color: '#1f2937',
+    },
+    promptText: {
+        fontSize: 18,
+        color: '#4b5563',
         marginBottom: 20,
+        textAlign: 'center',
+    },
+    choiceContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 8,
+        width: '90%',
+    },
+    choiceLabelContainer: {
+        backgroundColor: '#2563eb',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+    },
+    choiceLabel: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#fff',
     },
     choiceButton: {
-        backgroundColor: '#007acc',
+        backgroundColor: '#1E90FF',
+        flex: 1,
         padding: 15,
-        marginVertical: 10,
-        borderRadius: 10,
-        width: '80%',
+        borderRadius: 25,
         alignItems: 'center',
+        elevation: 5,
     },
     choiceText: {
         color: '#fff',
@@ -200,29 +243,28 @@ const styles = StyleSheet.create({
     topButtonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: '80%',
-        marginTop: 20,
-        gap: 15, // Adds spacing between buttons
+        width: '90%',
+        marginTop: 30,
+        marginBottom: 20,
     },
     skipButton: {
-        backgroundColor: '#ffa500',
+        backgroundColor: '#f59e0b',
         paddingVertical: 12,
         paddingHorizontal: 30,
-        borderRadius: 10,
+        borderRadius: 20,
     },
     getResultsButton: {
-        backgroundColor: '#5f7ac3',
+        backgroundColor: '#9333ea',
         paddingVertical: 12,
         paddingHorizontal: 30,
-        borderRadius: 10,
+        borderRadius: 20,
     },
     quitButton: {
-        position: 'absolute',
-        bottom: 100, // Adjusts position higher
-        backgroundColor: '#ff6347',
+        backgroundColor: '#ef4444',
         paddingVertical: 12,
         paddingHorizontal: 40,
-        borderRadius: 10,
+        borderRadius: 20,
+        marginTop: 20,
     },
     buttonText: {
         color: '#fff',
@@ -238,14 +280,15 @@ const styles = StyleSheet.create({
     modalContent: {
         backgroundColor: '#fff',
         padding: 30,
-        borderRadius: 15,
+        borderRadius: 20,
         width: '80%',
         alignItems: 'center',
+        elevation: 5,
     },
     modalTitle: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#007acc',
+        color: '#1f2937',
         marginBottom: 20,
     },
     resultText: {
@@ -253,10 +296,10 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     closeButton: {
-        backgroundColor: '#007acc',
+        backgroundColor: '#2563eb',
         paddingVertical: 12,
         paddingHorizontal: 30,
-        borderRadius: 10,
+        borderRadius: 20,
         marginTop: 20,
     },
     closeButtonText: {
@@ -266,9 +309,10 @@ const styles = StyleSheet.create({
     },
     noDataText: {
         fontSize: 18,
-        color: '#ff6347',
+        color: '#ef4444',
         textAlign: 'center',
     },
 });
 
 export default PhraseGame;
+
