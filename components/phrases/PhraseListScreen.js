@@ -1,29 +1,82 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, SectionList, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, SectionList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
+import phrasesData from '../data/phrases.json'; // Імпорт JSON з фразами
 
-const PhraseListScreen = ({ navigation }) => {
+const PhraseListScreen = ({ navigation, route }) => {
     const [phrases, setPhrases] = useState([]);
     const [sections, setSections] = useState([]);
+    const selectedSectionIndex = route.params?.selectedSectionIndex ?? null;
 
     useEffect(() => {
-        const loadPhrases = async () => {
+        const initializePhrases = async () => {
             try {
                 const storedPhrases = await AsyncStorage.getItem('phrases');
-                if (storedPhrases) {
-                    const parsedPhrases = JSON.parse(storedPhrases);
-                    setPhrases(parsedPhrases);
-                    divideIntoSections(parsedPhrases);
+                let phrasesArray = storedPhrases ? JSON.parse(storedPhrases) : [];
+
+                // Якщо AsyncStorage порожній, заповнюємо його даними з JSON
+                if (phrasesArray.length === 0) {
+                    phrasesArray = phrasesData.phrases;
+                    await AsyncStorage.setItem('phrases', JSON.stringify(phrasesArray));
+                } else {
+                    // Додаємо фрази з JSON, перевіряючи на дублікати
+                    phrasesData.phrases.forEach(newPhrase => {
+                        const isDuplicate = phrasesArray.some(
+                            phrase =>
+                                phrase.phrase &&
+                                newPhrase.phrase &&
+                                typeof phrase.phrase === 'string' &&
+                                typeof newPhrase.phrase === 'string' &&
+                                phrase.phrase.toLowerCase() === newPhrase.phrase.toLowerCase()
+                        );
+
+                        if (!isDuplicate) {
+                            phrasesArray.push(newPhrase);
+                        }
+                    });
+                    await AsyncStorage.setItem('phrases', JSON.stringify(phrasesArray));
                 }
+
+                setPhrases(phrasesArray);
+                divideIntoSections(phrasesArray);
             } catch (error) {
-                console.error(error);
+                console.error('Error loading phrases', error);
             }
         };
 
-        const focusListener = navigation.addListener('focus', loadPhrases);
+        initializePhrases();
+        const focusListener = navigation.addListener('focus', initializePhrases);
         return focusListener;
     }, [navigation]);
+
+    // Функція для додавання нової фрази з перевіркою на дублікат
+    const addNewPhrase = async (newPhrase) => {
+        try {
+            // Перевірка, чи є фраза вже в масиві
+            const isDuplicate = phrases.some(
+                phrase =>
+                    phrase.phrase &&
+                    newPhrase.phrase &&
+                    typeof phrase.phrase === 'string' &&
+                    typeof newPhrase.phrase === 'string' &&
+                    phrase.phrase.toLowerCase() === newPhrase.phrase.toLowerCase()
+            );
+
+            if (!isDuplicate) {
+                const updatedPhrases = [...phrases, newPhrase];
+                setPhrases(updatedPhrases);
+                divideIntoSections(updatedPhrases);
+
+                // Зберігаємо оновлений список в AsyncStorage
+                await AsyncStorage.setItem('phrases', JSON.stringify(updatedPhrases));
+            } else {
+                Alert.alert("Duplicate Phrase", "This phrase already exists in the list.");
+            }
+        } catch (error) {
+            console.error('Error saving new phrase', error);
+        }
+    };
 
     const divideIntoSections = (phrasesArray) => {
         const newSections = [];
@@ -34,22 +87,25 @@ const PhraseListScreen = ({ navigation }) => {
                 data: sectionPhrases,
             });
         }
-        setSections(newSections);
+
+        if (selectedSectionIndex !== null) {
+            setSections([newSections[selectedSectionIndex]]);
+        } else {
+            setSections(newSections);
+        }
     };
 
     const renderItem = ({ item, index, section }) => (
         <View style={styles.itemContainer}>
-            <ScrollView style={styles.phraseContainer}>
-                <Text style={styles.phrase}>
-                    {index + 1}. {item.phrase ? item.phrase : ''} - {item.translation}
-                </Text>
-            </ScrollView>
+            <Text style={styles.phrase}>
+                {index + 1}. {item.phrase ? item.phrase.toLowerCase() : ''} - {item.translation}
+            </Text>
             <View style={styles.separator} />
             <View style={styles.actionIcons}>
                 <TouchableOpacity onPress={() => navigation.navigate('PhraseEdit', { index, item })}>
                     <Icon name="create-outline" size={24} color="#007acc" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => confirmDeletePhrase(sections.indexOf(section), index)}>
+                <TouchableOpacity onPress={() => confirmDeletePhrase(sections.indexOf(section), index)} style={styles.deleteButton}>
                     <Icon name="trash-outline" size={24} color="#ff6347" />
                 </TouchableOpacity>
             </View>
@@ -85,7 +141,7 @@ const PhraseListScreen = ({ navigation }) => {
         <View style={styles.container}>
             <SectionList
                 sections={sections}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(item, index) => `${item.phrase}-${index}`} // Унікальний ключ для кожного елемента
                 renderItem={renderItem}
                 renderSectionHeader={({ section: { title } }) => (
                     <View style={styles.sectionHeaderContainer}>
@@ -125,12 +181,9 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     },
-    phraseContainer: {
-        maxHeight: 60,
-        flex: 1,
-    },
     phrase: {
-        fontSize: 16,
+        flex: 1,
+        fontSize: 18,
         color: '#333',
     },
     separator: {
@@ -142,6 +195,8 @@ const styles = StyleSheet.create({
     actionIcons: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
+    },
+    deleteButton: {
         marginLeft: 10,
     },
     emptyMessage: {

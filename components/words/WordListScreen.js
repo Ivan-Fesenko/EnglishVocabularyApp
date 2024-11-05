@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, SectionList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
+import wordsData from '../data/words.json'; // Імпорт JSON зі словами
 
 const WordListScreen = ({ navigation, route }) => {
     const [words, setWords] = useState([]);
@@ -12,20 +13,40 @@ const WordListScreen = ({ navigation, route }) => {
         const loadWords = async () => {
             try {
                 const storedWords = await AsyncStorage.getItem('words');
-                if (storedWords !== null) {
-                    const parsedWords = JSON.parse(storedWords);
-                    setWords(parsedWords);
-                    divideIntoSections(parsedWords);
-                }
+                let wordsArray = storedWords ? JSON.parse(storedWords) : [];
+
+                // Створення об'єкту для швидкого порівняння слів з JSON
+                const jsonWordsMap = new Map(
+                    wordsData.words.map(word => [word.word.toLowerCase(), word])
+                );
+
+                // Оновлення або додавання слів з JSON
+                wordsArray = wordsArray.map(existingWord => {
+                    const jsonWord = jsonWordsMap.get(existingWord.word.toLowerCase());
+                    if (jsonWord) {
+                        // Заміняємо існуюче слово на JSON-версію, якщо воно є в JSON
+                        return jsonWord;
+                    }
+                    return existingWord; // залишаємо незмінним, якщо його немає в JSON
+                });
+
+                // Додаємо нові слова з JSON, яких немає в AsyncStorage
+                wordsData.words.forEach(jsonWord => {
+                    if (!wordsArray.some(word => word.word.toLowerCase() === jsonWord.word.toLowerCase())) {
+                        wordsArray.push(jsonWord);
+                    }
+                });
+
+                // Зберігаємо оновлений масив в AsyncStorage
+                await AsyncStorage.setItem('words', JSON.stringify(wordsArray));
+                setWords(wordsArray);
+                divideIntoSections(wordsArray);
             } catch (error) {
                 console.error('Error loading words', error);
             }
         };
 
-        const focusListener = navigation.addListener('focus', () => {
-            loadWords();
-        });
-
+        const focusListener = navigation.addListener('focus', loadWords);
         return focusListener;
     }, [navigation]);
 
