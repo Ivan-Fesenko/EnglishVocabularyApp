@@ -99,15 +99,16 @@ const PhraseGame = ({ route, navigation }) => {
     };
 
     const resetGame = () => {
-        setModalVisible(false);
+        setPhrases(phrases.sort(() => Math.random() - 0.5)); // Перетасувати масив слів
         setCurrentPhraseIndex(0);
         setScore(0);
         setIncorrect(0);
         setSkipped(0);
-        const { selectedPhrases } = route.params;
-        if (selectedPhrases) {
-            setPhrases(selectedPhrases.sort(() => Math.random() - 0.5));
-            generateChoices(selectedPhrases[0], selectedPhrases);
+        setModalVisible(false);
+
+        // Повторно ініціалізувати вибір для нового першого слова
+        if (phrases.length > 0) {
+            generateChoices(phrases[0], phrases);
         }
     };
 

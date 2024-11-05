@@ -94,16 +94,19 @@ const WordGame = ({ route, navigation }) => {
     };
 
     const resetGame = () => {
+        setWords(words.sort(() => Math.random() - 0.5)); // Shuffle words array
         setCurrentWordIndex(0);
         setScore(0);
         setIncorrect(0);
         setSkipped(0);
         setModalVisible(false);
-        // Заново ініціалізуємо гру з поточними словами
+
+        // Reinitialize choices for the new first word
         if (words.length > 0) {
             generateChoices(words[0], words);
         }
     };
+
 
     const choiceLabels = ['A', 'B', 'C', 'D'];
 
